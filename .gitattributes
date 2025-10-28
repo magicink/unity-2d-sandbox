@@ -1,0 +1,72 @@
+# Unity .gitattributes
+# Normalize text files and ensure consistent line endings across platforms.
+# For best results, set `core.autocrlf` appropriately per-platform (true on Windows, input on macOS/Linux)
+
+# Auto-detect text files and normalize
+* text=auto
+
+# Force LF and treat Unity YAML files as text so they can be merged with Unity smart merge
+# (Requires UnityYAMLMerge or another merge driver configured in your git config)
+*.unity text eol=lf merge=unityyamlmerge
+*.prefab text eol=lf merge=unityyamlmerge
+*.asset text eol=lf merge=unityyamlmerge
+*.mat text eol=lf merge=unityyamlmerge
+*.meta text eol=lf merge=unityyamlmerge
+
+# Treat common text formats as text
+*.cs   text eol=lf
+*.shader text
+*.cginc text
+*.hlsl text
+*.txt  text eol=lf
+*.md   text
+*.json text eol=lf
+*.asmdef text
+*.asmref text
+
+# Unity Input System action assets (JSON) - treat as text, prefer LF, use union merge to reduce conflicts
+*.inputactions text eol=lf merge=union
+
+# Large binary files: mark as binary to avoid CRLF conversions and diffs
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.tga binary
+*.psd binary
+*.bmp binary
+*.gif binary
+*.ico binary
+
+# 3D assets and large binary assets
+*.fbx binary
+*.obj binary
+*.3ds binary
+*.blend binary
+
+# Audio / Video / Archives / Executables
+*.wav binary
+*.mp3 binary
+*.ogg binary
+*.aiff binary
+*.flac binary
+*.mp4 binary
+*.mov binary
+*.zip binary
+*.rar binary
+*.7z binary
+*.tar.gz binary
+*.exe binary
+*.dll binary
+
+# Ignore generated files in archives/packaging export
+# (optional) If you use Git LFS, uncomment and adjust the following patterns and run `git lfs track`:
+# *.psd filter=lfs diff=lfs merge=lfs -text
+# *.fbx filter=lfs diff=lfs merge=lfs -text
+# *.png filter=lfs diff=lfs merge=lfs -text
+
+# Optional: tell Git to use Unity's smart merge driver for YAML files. To enable, run:
+# git config --global merge.unityyamlmerge.name "Unity smart merge"
+# git config --global merge.unityyamlmerge.driver "\"<path-to-UnityYAMLMerge>\" merge -p"
+# Replace <path-to-UnityYAMLMerge> with your Unity Editor's UnityYAMLMerge executable path.
+
+# End of file
