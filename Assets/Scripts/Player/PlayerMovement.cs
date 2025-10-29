@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Sandbox.Player
+namespace Player
 {
     [DisallowMultipleComponent]
     public sealed class PlayerMovement : MonoBehaviour
