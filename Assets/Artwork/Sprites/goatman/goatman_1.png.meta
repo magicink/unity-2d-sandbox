@@ -1,0 +1,1911 @@
+fileFormatVersion: 2
+guid: b7a35699a4e214e4b8f96d40429a257a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8369440223388889563
+    second: goatman_1_0
+  - first:
+      213: 4327733109518080396
+    second: goatman_1_1
+  - first:
+      213: 2023051917715605373
+    second: goatman_1_2
+  - first:
+      213: 4277171840889239173
+    second: goatman_1_3
+  - first:
+      213: -4658147866444731970
+    second: goatman_1_4
+  - first:
+      213: 4077133947143343289
+    second: goatman_1_5
+  - first:
+      213: 3190736492996416865
+    second: goatman_1_6
+  - first:
+      213: 1845772582681357456
+    second: goatman_1_7
+  - first:
+      213: -285554659006011083
+    second: goatman_1_8
+  - first:
+      213: -7140140306149265583
+    second: goatman_1_9
+  - first:
+      213: 1120448188875464780
+    second: goatman_1_10
+  - first:
+      213: -5582081637488866326
+    second: goatman_1_11
+  - first:
+      213: 3026947816034372339
+    second: goatman_1_12
+  - first:
+      213: 7276243953051029841
+    second: goatman_1_13
+  - first:
+      213: -2144050883813141069
+    second: goatman_1_14
+  - first:
+      213: -3267857780212793919
+    second: goatman_1_15
+  - first:
+      213: -1941171612544787042
+    second: goatman_1_16
+  - first:
+      213: 2044626280670701256
+    second: goatman_1_17
+  - first:
+      213: -1041385658996704528
+    second: goatman_1_18
+  - first:
+      213: 1010342739120203363
+    second: goatman_1_19
+  - first:
+      213: 3607152748454451385
+    second: goatman_1_20
+  - first:
+      213: -2334931618261076540
+    second: goatman_1_21
+  - first:
+      213: 3103545565106483732
+    second: goatman_1_22
+  - first:
+      213: -6710976575876069026
+    second: goatman_1_23
+  - first:
+      213: -1311313982644642068
+    second: goatman_1_24
+  - first:
+      213: -8987291957118068865
+    second: goatman_1_25
+  - first:
+      213: 4345185384018922591
+    second: goatman_1_26
+  - first:
+      213: -6531841939518992273
+    second: goatman_1_27
+  - first:
+      213: 5851886581301501749
+    second: goatman_1_28
+  - first:
+      213: -5228043329138647082
+    second: goatman_1_29
+  - first:
+      213: -60361105826104615
+    second: goatman_1_30
+  - first:
+      213: 6681762111237540400
+    second: goatman_1_31
+  - first:
+      213: -3092060500756052993
+    second: goatman_1_32
+  - first:
+      213: 3563391742895305296
+    second: goatman_1_33
+  - first:
+      213: 8433808334515057755
+    second: goatman_1_34
+  - first:
+      213: -1760801535923141478
+    second: goatman_1_35
+  - first:
+      213: 198289413739359846
+    second: goatman_1_36
+  - first:
+      213: 4228073682356343650
+    second: goatman_1_37
+  - first:
+      213: -5527454810418178123
+    second: goatman_1_38
+  - first:
+      213: -2445760465884657354
+    second: goatman_1_39
+  - first:
+      213: 1275425668087411082
+    second: goatman_1_40
+  - first:
+      213: -577613939513327034
+    second: goatman_1_41
+  - first:
+      213: 9114798077867437595
+    second: goatman_1_42
+  - first:
+      213: 2469590260413821100
+    second: goatman_1_43
+  - first:
+      213: -5549055546079002679
+    second: goatman_1_44
+  - first:
+      213: 609867430464584819
+    second: goatman_1_45
+  - first:
+      213: 3581995934820651200
+    second: goatman_1_46
+  - first:
+      213: -8552851989296591559
+    second: goatman_1_47
+  - first:
+      213: 7957145024274219300
+    second: goatman_1_48
+  - first:
+      213: -4135305951528803862
+    second: goatman_1_49
+  - first:
+      213: 2298327533932370821
+    second: goatman_1_50
+  - first:
+      213: -7749589915188786005
+    second: goatman_1_51
+  - first:
+      213: -1804482163383102985
+    second: goatman_1_52
+  - first:
+      213: -4575097221181771954
+    second: goatman_1_53
+  - first:
+      213: -5439652506276966148
+    second: goatman_1_54
+  - first:
+      213: -3246623358894769803
+    second: goatman_1_55
+  - first:
+      213: 645410035249321057
+    second: goatman_1_56
+  - first:
+      213: -3198017778237899304
+    second: goatman_1_57
+  - first:
+      213: 5310082536464117630
+    second: goatman_1_58
+  - first:
+      213: -9003902553449147946
+    second: goatman_1_59
+  - first:
+      213: 5027848491370997518
+    second: goatman_1_60
+  - first:
+      213: 3184954590475680715
+    second: goatman_1_61
+  - first:
+      213: 7813040258197546324
+    second: goatman_1_62
+  - first:
+      213: -991684449794147887
+    second: goatman_1_63
+  - first:
+      213: -5688776466112057663
+    second: goatman_1_64
+  - first:
+      213: -8009649165667123447
+    second: goatman_1_65
+  - first:
+      213: -5468898071803779412
+    second: goatman_1_66
+  - first:
+      213: -8136258788189457322
+    second: goatman_1_67
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: goatman_1_0
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 351
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd1f5fb3a89362470800000000000000
+      internalID: 8369440223388889563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_1
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 351
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c89958375523f0c30800000000000000
+      internalID: 4327733109518080396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_2
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 351
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d778c952003531c10800000000000000
+      internalID: 2023051917715605373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_3
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 351
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 586b18bb0219b5b30800000000000000
+      internalID: 4277171840889239173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_4
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 351
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb96155023fea5fb0800000000000000
+      internalID: -4658147866444731970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_5
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 351
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bc4a2d29b3e49830800000000000000
+      internalID: 4077133947143343289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_6
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 319
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1655de46fe5c74c20800000000000000
+      internalID: 3190736492996416865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_7
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 321
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09ca0e672608d9910800000000000000
+      internalID: 1845772582681357456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_8
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 320
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5392df1fc81890cf0800000000000000
+      internalID: -285554659006011083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_9
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 319
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15f268db83029ec90800000000000000
+      internalID: -7140140306149265583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_10
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 321
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c40e62ff0b1ac8f00800000000000000
+      internalID: 1120448188875464780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_11
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 320
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aebce3a63567882b0800000000000000
+      internalID: -5582081637488866326
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_12
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 287
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fa8f505001e10a20800000000000000
+      internalID: 3026947816034372339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_13
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 287
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 151d0b8f2596af460800000000000000
+      internalID: 7276243953051029841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_14
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 288
+        width: 25
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b594f1b41dce32e0800000000000000
+      internalID: -2144050883813141069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_15
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 287
+        width: 25
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1cd7be9a9ac36a2d0800000000000000
+      internalID: -3267857780212793919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_16
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 287
+        width: 18
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9d123204b29f05e0800000000000000
+      internalID: -1941171612544787042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_17
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 287
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c62ec5f4c8ff5c10800000000000000
+      internalID: 2044626280670701256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_18
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 255
+        width: 23
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0fab059b2414c81f0800000000000000
+      internalID: -1041385658996704528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_19
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 255
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 366a7a24e55750e00800000000000000
+      internalID: 1010342739120203363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_20
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 255
+        width: 25
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b8933e205e2f0230800000000000000
+      internalID: 3607152748454451385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_21
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 255
+        width: 25
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c578be6018a89fd0800000000000000
+      internalID: -2334931618261076540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_22
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 255
+        width: 24
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41239688f32021b20800000000000000
+      internalID: 3103545565106483732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_23
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 255
+        width: 23
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5980fa4c52ddd2a0800000000000000
+      internalID: -6710976575876069026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_24
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 223
+        width: 19
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cee967361e64dcde0800000000000000
+      internalID: -1311313982644642068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_25
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 223
+        width: 19
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f77904be499b64380800000000000000
+      internalID: -8987291957118068865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_26
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 223
+        width: 19
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5ccaa1c5133d4c30800000000000000
+      internalID: 4345185384018922591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_27
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 223
+        width: 19
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f60d8f9fc5c3a55a0800000000000000
+      internalID: -6531841939518992273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_28
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 223
+        width: 19
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53fd95057d3163150800000000000000
+      internalID: 5851886581301501749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_29
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 223
+        width: 19
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6df1750aa424277b0800000000000000
+      internalID: -5228043329138647082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_30
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 191
+        width: 18
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9da3cf0e4ed892ff0800000000000000
+      internalID: -60361105826104615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_31
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 191
+        width: 18
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03a4af91d336abc50800000000000000
+      internalID: 6681762111237540400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_32
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 191
+        width: 18
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff34b646b5bc615d0800000000000000
+      internalID: -3092060500756052993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_33
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 191
+        width: 18
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 052b5d619e5b37130800000000000000
+      internalID: 3563391742895305296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_34
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 191
+        width: 18
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b54bf7afef7ea0570800000000000000
+      internalID: 8433808334515057755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_35
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 191
+        width: 18
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a94c65b05506097e0800000000000000
+      internalID: -1760801535923141478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_36
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 161
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66ea7a4db2770c200800000000000000
+      internalID: 198289413739359846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_37
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 161
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2631701ec922daa30800000000000000
+      internalID: 4228073682356343650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_38
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 161
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b71009b2298a43b0800000000000000
+      internalID: -5527454810418178123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_39
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 161
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 639404180d9ee0ed0800000000000000
+      internalID: -2445760465884657354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_40
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 161
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a81f3cb33e833b110800000000000000
+      internalID: 1275425668087411082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_41
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 161
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6428efdae27ebf7f0800000000000000
+      internalID: -577613939513327034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_42
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 129
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1ea3be3f844e7e70800000000000000
+      internalID: 9114798077867437595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_43
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 129
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca0fab4e14fb54220800000000000000
+      internalID: 2469590260413821100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_44
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 129
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9cfbc09816bcdf2b0800000000000000
+      internalID: -5549055546079002679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_45
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 129
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37cfbe0623fa67800800000000000000
+      internalID: 609867430464584819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_46
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 129
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c0d0e1135ec5b130800000000000000
+      internalID: 3581995934820651200
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_47
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 129
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93dcb714e6a2e4980800000000000000
+      internalID: -8552851989296591559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_48
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 95
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 421c126ad357d6e60800000000000000
+      internalID: 7957145024274219300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_49
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 95
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae1219995217c96c0800000000000000
+      internalID: -4135305951528803862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_50
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 95
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58bd98d07bc45ef10800000000000000
+      internalID: 2298327533932370821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_51
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 95
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bac093ef70de37490800000000000000
+      internalID: -7749589915188786005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_52
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 95
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f19500780135f6e0800000000000000
+      internalID: -1804482163383102985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_53
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 95
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4f6596315df180c0800000000000000
+      internalID: -4575097221181771954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_54
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 63
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf05cc5bdd87284b0800000000000000
+      internalID: -5439652506276966148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_55
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 63
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5797795a14da1f2d0800000000000000
+      internalID: -3246623358894769803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_56
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 63
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 164128de105f4f800800000000000000
+      internalID: 645410035249321057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_57
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 63
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ddfeb646cb5e93d0800000000000000
+      internalID: -3198017778237899304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_58
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 63
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7fe2f1dee331b940800000000000000
+      internalID: 5310082536464117630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_59
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 63
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d15e651556bb0380800000000000000
+      internalID: -9003902553449147946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_60
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 31
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e07e6a0709186c540800000000000000
+      internalID: 5027848491370997518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_61
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 31
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bcb7d0f435b333c20800000000000000
+      internalID: 3184954590475680715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_62
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 31
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 455e0b538be7d6c60800000000000000
+      internalID: 7813040258197546324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_63
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 31
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d9bdb04f34dc32f0800000000000000
+      internalID: -991684449794147887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_64
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 0
+        width: 17
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1cee9cac1f76d01b0800000000000000
+      internalID: -5688776466112057663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_65
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 0
+        width: 17
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90f38e0558208d090800000000000000
+      internalID: -8009649165667123447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_66
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 0
+        width: 17
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca6215ddd229a14b0800000000000000
+      internalID: -5468898071803779412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goatman_1_67
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 0
+        width: 17
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65431596db3361f80800000000000000
+      internalID: -8136258788189457322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      goatman_1_0: 8369440223388889563
+      goatman_1_1: 4327733109518080396
+      goatman_1_10: 1120448188875464780
+      goatman_1_11: -5582081637488866326
+      goatman_1_12: 3026947816034372339
+      goatman_1_13: 7276243953051029841
+      goatman_1_14: -2144050883813141069
+      goatman_1_15: -3267857780212793919
+      goatman_1_16: -1941171612544787042
+      goatman_1_17: 2044626280670701256
+      goatman_1_18: -1041385658996704528
+      goatman_1_19: 1010342739120203363
+      goatman_1_2: 2023051917715605373
+      goatman_1_20: 3607152748454451385
+      goatman_1_21: -2334931618261076540
+      goatman_1_22: 3103545565106483732
+      goatman_1_23: -6710976575876069026
+      goatman_1_24: -1311313982644642068
+      goatman_1_25: -8987291957118068865
+      goatman_1_26: 4345185384018922591
+      goatman_1_27: -6531841939518992273
+      goatman_1_28: 5851886581301501749
+      goatman_1_29: -5228043329138647082
+      goatman_1_3: 4277171840889239173
+      goatman_1_30: -60361105826104615
+      goatman_1_31: 6681762111237540400
+      goatman_1_32: -3092060500756052993
+      goatman_1_33: 3563391742895305296
+      goatman_1_34: 8433808334515057755
+      goatman_1_35: -1760801535923141478
+      goatman_1_36: 198289413739359846
+      goatman_1_37: 4228073682356343650
+      goatman_1_38: -5527454810418178123
+      goatman_1_39: -2445760465884657354
+      goatman_1_4: -4658147866444731970
+      goatman_1_40: 1275425668087411082
+      goatman_1_41: -577613939513327034
+      goatman_1_42: 9114798077867437595
+      goatman_1_43: 2469590260413821100
+      goatman_1_44: -5549055546079002679
+      goatman_1_45: 609867430464584819
+      goatman_1_46: 3581995934820651200
+      goatman_1_47: -8552851989296591559
+      goatman_1_48: 7957145024274219300
+      goatman_1_49: -4135305951528803862
+      goatman_1_5: 4077133947143343289
+      goatman_1_50: 2298327533932370821
+      goatman_1_51: -7749589915188786005
+      goatman_1_52: -1804482163383102985
+      goatman_1_53: -4575097221181771954
+      goatman_1_54: -5439652506276966148
+      goatman_1_55: -3246623358894769803
+      goatman_1_56: 645410035249321057
+      goatman_1_57: -3198017778237899304
+      goatman_1_58: 5310082536464117630
+      goatman_1_59: -9003902553449147946
+      goatman_1_6: 3190736492996416865
+      goatman_1_60: 5027848491370997518
+      goatman_1_61: 3184954590475680715
+      goatman_1_62: 7813040258197546324
+      goatman_1_63: -991684449794147887
+      goatman_1_64: -5688776466112057663
+      goatman_1_65: -8009649165667123447
+      goatman_1_66: -5468898071803779412
+      goatman_1_67: -8136258788189457322
+      goatman_1_7: 1845772582681357456
+      goatman_1_8: -285554659006011083
+      goatman_1_9: -7140140306149265583
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
