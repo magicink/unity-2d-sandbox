@@ -19,14 +19,11 @@ namespace Player
         private Vector2 moveInput;
         private Rigidbody2D cachedBody;
         private SpriteRenderer cachedSprite;
-        private Animator cachedAnimator;
-        private static readonly int HashIsMoving = Animator.StringToHash("IsMoving");
 
         private void Awake()
         {
             TryGetComponent(out cachedBody);
             TryGetComponent(out cachedSprite);
-            TryGetComponent(out cachedAnimator);
         }
 
         private void OnEnable()
@@ -134,13 +131,11 @@ namespace Player
             }
 
             UpdateFacing();
-            UpdateAnimatorState();
         }
 
         private void OnMoveCanceled(InputAction.CallbackContext context)
         {
             moveInput = Vector2.zero;
-            UpdateAnimatorState();
         }
 
         private void MoveTransform(float deltaTime)
@@ -174,15 +169,6 @@ namespace Player
             }
         }
 
-        private void UpdateAnimatorState()
-        {
-            if (cachedAnimator == null)
-            {
-                return;
-            }
-
-            bool isMoving = moveInput.sqrMagnitude > 0.0001f;
-            cachedAnimator.SetBool(HashIsMoving, isMoving);
-        }
+        
     }
 }

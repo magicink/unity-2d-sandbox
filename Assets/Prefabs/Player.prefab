@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7993423890300786276}
   - component: {fileID: 2622244399518120324}
   - component: {fileID: 6411513145145551115}
+  - component: {fileID: 5748392019384756102}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -167,3 +168,15 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 0.12, y: 0.18}
   m_Direction: 0
+--- !u!114 &5748392019384756102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8484953565441635283}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e8c1e9a0bd44d95b13f9d387fe6e9a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerStateMachine
