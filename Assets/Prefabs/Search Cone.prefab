@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 7225419824721618434}
   - component: {fileID: 893588939385695736}
   - component: {fileID: 927734022253153796}
+  - component: {fileID: 2416819071775411937}
+  - component: {fileID: 3070517503391048032}
   m_Layer: 0
   m_Name: Search Cone
   m_TagString: Untagged
@@ -66,7 +68,7 @@ PolygonCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -82,8 +84,8 @@ PolygonCollider2D:
     m_Bits: 4294967295
   m_CallbackLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
+    m_Bits: 256
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -99,9 +101,51 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0, y: 1}
-      - {x: -0.95105654, y: 0.30901697}
-      - {x: -0.5877852, y: -0.80901706}
-      - {x: 0.58778536, y: -0.80901694}
-      - {x: 0.9510565, y: 0.30901712}
+    - - {x: 0, y: 0}
+      - {x: 4.6193976, y: -1.9134173}
+      - {x: 4.86185, y: -1.1672268}
+      - {x: 4.9845867, y: -0.39229548}
+      - {x: 4.9845867, y: 0.39229548}
+      - {x: 4.86185, y: 1.1672268}
+      - {x: 4.6193976, y: 1.9134173}
   m_UseDelaunayMesh: 0
+--- !u!114 &2416819071775411937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 247518840745673241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1345fa99666a2ec48a7ca97dd3f3c99f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Sandbox.Debugging.ConeCollider2D
+  source: {fileID: 893588939385695736}
+  overrideSegments: -1
+  setAsTrigger: 1
+  autoUpdate: 1
+--- !u!114 &3070517503391048032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 247518840745673241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa6cda08e2598e8479849b722d27f4f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Sandbox.Debugging.ConeDetection2D
+  onlyWith:
+    serializedVersion: 2
+    m_Bits: 256
+  useTagCheck: 0
+  playerTag: Player
+  restrictColliderCallbacksToMask: 1
+  onPlayerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onPlayerExit:
+    m_PersistentCalls:
+      m_Calls: []
