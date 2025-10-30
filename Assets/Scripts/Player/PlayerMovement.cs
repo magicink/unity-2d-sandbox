@@ -18,10 +18,15 @@ namespace Player
         private bool ownsAction;
         private Vector2 moveInput;
         private Rigidbody2D cachedBody;
+        private SpriteRenderer cachedSprite;
+        private Animator cachedAnimator;
+        private static readonly int HashIsMoving = Animator.StringToHash("IsMoving");
 
         private void Awake()
         {
             TryGetComponent(out cachedBody);
+            TryGetComponent(out cachedSprite);
+            TryGetComponent(out cachedAnimator);
         }
 
         private void OnEnable()
@@ -127,11 +132,15 @@ namespace Player
                 Vector2 aligned = (Vector2)(right * moveInput.x + forward * moveInput.y);
                 moveInput = Vector2.ClampMagnitude(aligned, 1f);
             }
+
+            UpdateFacing();
+            UpdateAnimatorState();
         }
 
         private void OnMoveCanceled(InputAction.CallbackContext context)
         {
             moveInput = Vector2.zero;
+            UpdateAnimatorState();
         }
 
         private void MoveTransform(float deltaTime)
@@ -143,6 +152,37 @@ namespace Player
 
             Vector3 delta = new Vector3(moveInput.x, moveInput.y, 0f) * moveSpeed * deltaTime;
             transform.position += delta;
+        }
+
+        private void UpdateFacing()
+        {
+            if (cachedSprite == null)
+            {
+                return;
+            }
+
+            const float epsilon = 0.001f;
+            if (moveInput.x > epsilon)
+            {
+                // Moving right: face right
+                cachedSprite.flipX = false;
+            }
+            else if (moveInput.x < -epsilon)
+            {
+                // Moving left: flip horizontally (mirror across Y axis)
+                cachedSprite.flipX = true;
+            }
+        }
+
+        private void UpdateAnimatorState()
+        {
+            if (cachedAnimator == null)
+            {
+                return;
+            }
+
+            bool isMoving = moveInput.sqrMagnitude > 0.0001f;
+            cachedAnimator.SetBool(HashIsMoving, isMoving);
         }
     }
 }
