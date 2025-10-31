@@ -19,7 +19,15 @@ namespace Sandbox.Debugging
         [Tooltip("Regenerate collider automatically when values change.")]
         [SerializeField] private bool autoUpdate = true;
 
-        private PolygonCollider2D pc;
+        
+        // Cache of last applied values for change detection
+        private float lastAngle = -1f;
+        private float lastLength = -1f;
+        private float lastRotationOffset = float.NaN;
+        private int lastSegs = -1;
+        private ConeGizmoRenderer.Facing lastFacing = (ConeGizmoRenderer.Facing)(-1);
+        private Vector2 lastCustomFacing = new Vector2(float.NaN, float.NaN);
+private PolygonCollider2D pc;
 
         private void Reset()
         {
@@ -27,11 +35,48 @@ namespace Sandbox.Debugging
             source = GetComponent<ConeGizmoRenderer>();
             if (pc != null) pc.isTrigger = true;
             Rebuild();
+            CacheCurrent();
         }
 
-        private void Awake() { if (autoUpdate) Rebuild(); }
-        private void OnEnable() { if (autoUpdate) Rebuild(); }
-        private void OnValidate() { if (autoUpdate) Rebuild(); }
+        private void Awake() { if (autoUpdate) { Rebuild(); CacheCurrent(); } }
+        private void OnEnable() { if (autoUpdate) { Rebuild(); CacheCurrent(); } }
+        
+        private void OnValidate()
+        {
+            if (autoUpdate) { Rebuild(); CacheCurrent(); }
+        }
+
+        private void Update()
+        {
+            if (!autoUpdate) return;
+            if (source == null) source = GetComponent<ConeGizmoRenderer>();
+            if (pc == null) pc = GetComponent<PolygonCollider2D>();
+            if (source == null || pc == null) return;
+
+            int segs = overrideSegments > 0 ? overrideSegments : Mathf.Clamp(source.arcSegments, 2, 256);
+            if (!Mathf.Approximately(lastAngle, source.angle)
+                || !Mathf.Approximately(lastLength, source.length)
+                || !Mathf.Approximately(lastRotationOffset, source.rotationOffset)
+                || segs != lastSegs
+                || source.facing != lastFacing
+                || (lastCustomFacing - source.customFacing).sqrMagnitude > 1e-6f)
+            {
+                Rebuild();
+                CacheCurrent();
+            }
+        }
+
+        private void CacheCurrent()
+        {
+            if (source == null) return;
+            lastAngle = source.angle;
+            lastLength = source.length;
+            lastRotationOffset = source.rotationOffset;
+            lastSegs = overrideSegments > 0 ? overrideSegments : Mathf.Clamp(source.arcSegments, 2, 256);
+            lastFacing = source.facing;
+            lastCustomFacing = source.customFacing;
+        }
+
 
         [ContextMenu("Rebuild Collider")]
         public void Rebuild()
@@ -67,7 +112,9 @@ namespace Sandbox.Debugging
             }
 
             pc.pathCount = 1;
-            pc.SetPath(0, pts);
+            
+            CacheCurrent();
+pc.SetPath(0, pts);
             if (setAsTrigger) pc.isTrigger = true;
         }
 

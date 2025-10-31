@@ -41,7 +41,44 @@ namespace Sandbox.Debugging
         }
 
         private void OnEnable() { ApplyMaskToCollider(); }
+        
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            ApplyMaskToCollider();
+            TryBindLoggerPersistent();
+        }
+
+        [ContextMenu("Bind Logger (Persistent)")]
+        private void TryBindLoggerPersistent()
+        {
+            var logger = GetComponent<ConeConsoleLogger>();
+            if (logger == null) return;
+
+            // Add persistent listeners only if none exist yet
+            if (onPlayerEnter == null || onPlayerExit == null) return;
+
+            var enterCount = onPlayerEnter.GetPersistentEventCount();
+            var exitCount = onPlayerExit.GetPersistentEventCount();
+
+            if (enterCount == 0 || exitCount == 0)
+            {
+                UnityEditor.Undo.RecordObject(this, "Bind Cone Logger");
+                if (enterCount == 0)
+                {
+                    UnityEditor.Events.UnityEventTools.AddPersistentListener(onPlayerEnter, logger.LogEnter);
+                }
+                if (exitCount == 0)
+                {
+                    UnityEditor.Events.UnityEventTools.AddPersistentListener(onPlayerExit, logger.LogExit);
+                }
+                UnityEditor.EditorUtility.SetDirty(this);
+            }
+        }
+#else
         private void OnValidate() { ApplyMaskToCollider(); }
+#endif
+
 
         private void ApplyMaskToCollider()
         {
