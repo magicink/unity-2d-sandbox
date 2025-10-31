@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7225419824721618434}
   - component: {fileID: 893588939385695736}
   - component: {fileID: 927734022253153796}
-  - component: {fileID: 2416819071775411937}
+  - component: {fileID: 4942853547655165176}
   - component: {fileID: 3070517503391048032}
   m_Layer: 0
   m_Name: Search Cone
@@ -109,7 +109,7 @@ PolygonCollider2D:
       - {x: 4.86185, y: 1.1672268}
       - {x: 4.6193976, y: 1.9134173}
   m_UseDelaunayMesh: 0
---- !u!114 &2416819071775411937
+--- !u!114 &4942853547655165176
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -118,10 +118,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 247518840745673241}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1345fa99666a2ec48a7ca97dd3f3c99f, type: 3}
+  m_Script: {fileID: 11500000, guid: 5b7817f21a1f47f4fa7f1039badab50b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Sandbox.Debugging.ConeCollider2D
-  source: {fileID: 893588939385695736}
+  m_EditorClassIdentifier: Assembly-CSharp::Sandbox.Debugging.SearchCone
+  length: 5
+  angle: 45
+  arcSegments: 5
+  rotationOffset: 0
+  facing: 0
+  customFacing: {x: 1, y: 0}
+  drawWhenSelectedOnly: 0
+  lineColor: {r: 0, g: 1, b: 0, a: 1}
   overrideSegments: -1
   setAsTrigger: 1
   autoUpdate: 1
