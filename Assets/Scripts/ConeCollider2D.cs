@@ -38,17 +38,29 @@ private PolygonCollider2D pc;
             CacheCurrent();
         }
 
-        private void Awake() { if (autoUpdate) { Rebuild(); CacheCurrent(); } }
-        private void OnEnable() { if (autoUpdate) { Rebuild(); CacheCurrent(); } }
-        
-        private void OnValidate()
+private void Awake()
         {
+            if (Application.isPlaying) return; // do not update in Play Mode
             if (autoUpdate) { Rebuild(); CacheCurrent(); }
         }
-
-        private void Update()
+private void OnEnable()
         {
-            if (!autoUpdate) return;
+            if (Application.isPlaying) return; // do not update in Play Mode
+            if (autoUpdate) { Rebuild(); CacheCurrent(); }
+        }
+        
+private void OnValidate()
+        {
+#if UNITY_EDITOR
+            if (Application.isPlaying) return; // do not update while playing in Editor
+            if (autoUpdate) { Rebuild(); CacheCurrent(); }
+#endif
+        }
+
+private void Update()
+        {
+#if UNITY_EDITOR
+            if (Application.isPlaying || !autoUpdate) return; // edit-time only
             if (source == null) source = GetComponent<ConeGizmoRenderer>();
             if (pc == null) pc = GetComponent<PolygonCollider2D>();
             if (source == null || pc == null) return;
@@ -64,6 +76,7 @@ private PolygonCollider2D pc;
                 Rebuild();
                 CacheCurrent();
             }
+#endif
         }
 
         private void CacheCurrent()
