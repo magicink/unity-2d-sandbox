@@ -9,17 +9,13 @@ public class PlayerLauncher : MonoBehaviour
     [SerializeField] private PhysicsGamePlayer player = null;
     [Tooltip("Camera used to convert screen coordinates to world positions. If unset, Camera.main is used.")]
     [SerializeField] private Camera worldCamera = null;
-    [Tooltip("Optional smoothing for follow motion (0 = instant)")]
-    [SerializeField] private float followSmoothing = 0f;
 
-    // Cached player's Rigidbody2D
-    private Rigidbody2D playerBody;
-    private bool previousSimulatedState = true;
+    // PlayerLauncher does not control physics directly anymore - player handles it in its state machine
     // Whether the launcher currently controls the player's movement
     private bool isFollowing = false;
     // The input touch id that controls the player's follow (-1 for mouse, otherwise touchId)
     private int controllingTouchId = -2; // -2 == not assigned
-    private Vector3 followVelocity = Vector3.zero;
+    // PlayerLauncher no longer handles smoothing or movement directly.
 
     // Public accessor for other scripts (read-only)
     public PhysicsGamePlayer Player => player;
@@ -55,19 +51,13 @@ public class PlayerLauncher : MonoBehaviour
         if (worldCamera == null)
             worldCamera = Camera.main;
 
-        if (player != null)
-            playerBody = player.GetComponent<Rigidbody2D>();
-
-        if (playerBody != null)
-            previousSimulatedState = playerBody.simulated;
+        // Nothing else to initialize here; player tracks its own physics
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Simple helper - ensure we have the player's Rigidbody cached
-        if (playerBody == null && player != null)
-            playerBody = player.GetComponent<Rigidbody2D>();
+        // PlayerLauncher does not manage player's Rigidbody - the player manages physics when dragging.
 
         // If the new Input System EnhancedTouch is available, use it
         if (UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches.Count > 0)
@@ -138,38 +128,18 @@ public class PlayerLauncher : MonoBehaviour
 
         Debug.Log($"Touch started: id={touchId} position={screenPosition}");
 
-        // Disable physics on player body while dragging
-        if (playerBody != null)
-        {
-            previousSimulatedState = playerBody.simulated;
-            playerBody.simulated = false;
-#if UNITY_2023_1_OR_NEWER
-            playerBody.linearVelocity = Vector2.zero;
-#else
-            playerBody.velocity = Vector2.zero;
-#endif
-            playerBody.angularVelocity = 0f;
-        }
-        
-
+        // Convert to world position and notify player state machine to begin drag
         var worldPos = ScreenToWorld(screenPosition);
-        player.transform.position = worldPos;
+        player?.BeginDragAt(worldPos);
+        player?.UpdateDragTarget(worldPos);
     }
 
     private void UpdateFollow(Vector2 screenPosition)
     {
         if (!isFollowing || player == null)
             return;
-
         Vector3 targetWorld = ScreenToWorld(screenPosition);
-        if (followSmoothing <= 0f)
-        {
-            player.transform.position = targetWorld;
-        }
-        else
-        {
-            player.transform.position = Vector3.SmoothDamp(player.transform.position, targetWorld, ref followVelocity, followSmoothing);
-        }
+        player?.UpdateDragTarget(targetWorld);
     }
 
     private void EndFollow()
@@ -183,11 +153,9 @@ public class PlayerLauncher : MonoBehaviour
         isFollowing = false;
         controllingTouchId = -2;
 
-        if (playerBody != null)
-        {
-            playerBody.simulated = previousSimulatedState;
-        }
         Debug.Log($"Touch ended: id={previousId}");
+        // Notify the player's state machine that the drag/follow has ended
+        player?.EndDragAt();
     }
 
     private Vector3 ScreenToWorld(Vector2 screenPosition)
