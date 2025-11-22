@@ -4,6 +4,11 @@ using UnityEngine.InputSystem.EnhancedTouch;
 
 public class PlayerLauncher : MonoBehaviour
 {
+    /// <summary>
+    /// Singleton instance of the PlayerLauncher. Use this property to access the active launcher in the scene.
+    /// </summary>
+    public static PlayerLauncher Instance { get; private set; }
+
     [Header("References")]
     [Tooltip("Reference to the player instance that this launcher controls. Assign a PhysicsGamePlayer in the Inspector.")]
     [SerializeField] private PhysicsGamePlayer player = null;
@@ -34,6 +39,15 @@ public class PlayerLauncher : MonoBehaviour
 
     private void OnEnable()
     {
+        // Enforce singleton during enable - keep the first instance and destroy duplicates
+        if (Instance != null && Instance != this)
+        {
+            Debug.LogWarning("PlayerLauncher: another instance already exists. Destroying duplicate component.", this);
+            Destroy(this);
+            return;
+        }
+        Instance = this;
+
         // Ensure enhanced touch support is enabled if the Input System package is active
         EnhancedTouchSupport.Enable();
     }
@@ -41,6 +55,21 @@ public class PlayerLauncher : MonoBehaviour
     private void OnDisable()
     {
         EnhancedTouchSupport.Disable();
+        if (Instance == this)
+            Instance = null;
+    }
+
+    private void Awake()
+    {
+        // If another instance is already set and is not this, destroy the duplicate. This guards against
+        // duplicates in Awake order or when creating/destroying objects at runtime.
+        if (Instance != null && Instance != this)
+        {
+            Debug.LogWarning("PlayerLauncher.Awake: Detected duplicate PlayerLauncher. Destroying duplicate component.", this);
+            Destroy(this);
+            return;
+        }
+        Instance = this;
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
