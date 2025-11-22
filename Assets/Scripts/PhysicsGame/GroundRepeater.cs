@@ -17,6 +17,7 @@ public class GroundRepeater : MonoBehaviour
     [SerializeField] private Camera targetCamera;
     [Tooltip("Width of each ground tile in world units (set to the prefab's width)")]
     [SerializeField] private float tileWidth = 10f;
+    [SerializeField] private bool autoDetectTileWidth = true;
     [SerializeField] private int initialTiles = 3;
     [SerializeField] private float spawnBuffer = 1f;
     [SerializeField] private float despawnBuffer = 1f;
@@ -55,7 +56,8 @@ public class GroundRepeater : MonoBehaviour
             poolParent = transform;
         }
 
-        if (tileWidth <= 0f)
+        // Attempt to auto-detect tile width if configured or if not set
+        if (autoDetectTileWidth || tileWidth <= 0f)
         {
             // Attempt to derive tile width from the pool's prefab sprite bounds
             var prefab = pool.Prefab;
@@ -104,6 +106,84 @@ public class GroundRepeater : MonoBehaviour
         if (tileWidth < 0f)
         {
             tileWidth = 0f;
+        }
+
+        // When fields change in the editor, optionally auto-detect tile width
+        if (autoDetectTileWidth)
+        {
+            AutoDetectTileWidth();
+        }
+    }
+
+    [ContextMenu("Auto-detect Tile Width")]
+    private void AutoDetectTileWidth()
+    {
+        if (pool == null || pool.Prefab == null)
+        {
+            if (debugLogs)
+            {
+                Debug.LogWarning("GroundRepeater: Cannot auto-detect tileWidth because pool or pool.Prefab is null.", this);
+            }
+            return;
+        }
+
+        var prefab = pool.Prefab;
+        float detected = 0f;
+
+        // Try to find SpriteRenderer(s) and compute combined bounds
+        var renderers = prefab.GetComponentsInChildren<Renderer>(true);
+        if (renderers != null && renderers.Length > 0)
+        {
+            Bounds combined = new Bounds(prefab.transform.position, Vector3.zero);
+            bool first = true;
+            foreach (var r in renderers)
+            {
+                if (first)
+                {
+                    combined = r.bounds;
+                    first = false;
+                }
+                else
+                {
+                    combined.Encapsulate(r.bounds);
+                }
+            }
+
+            detected = combined.size.x;
+        }
+
+        // If no renderers, try to find a BoxCollider2D
+        if (detected <= 0f)
+        {
+            if (prefab.TryGetComponent<BoxCollider2D>(out var bc))
+            {
+                var scale = prefab.transform.lossyScale;
+                detected = bc.size.x * Mathf.Abs(scale.x);
+            }
+            else
+            {
+                // Try children colliders
+                var colliders = prefab.GetComponentsInChildren<BoxCollider2D>(true);
+                if (colliders != null && colliders.Length > 0)
+                {
+                    var maxX = 0f;
+                    foreach (var cc in colliders)
+                    {
+                        var scale = cc.transform.lossyScale;
+                        maxX = Mathf.Max(maxX, cc.size.x * Mathf.Abs(scale.x));
+                    }
+                    detected = maxX;
+                }
+            }
+        }
+
+        if (detected > 0f)
+        {
+            tileWidth = detected;
+            if (debugLogs)
+            {
+                Debug.Log($"GroundRepeater: auto-detected tileWidth = {tileWidth}", this);
+            }
         }
     }
 
