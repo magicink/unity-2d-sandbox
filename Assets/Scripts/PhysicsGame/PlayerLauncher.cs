@@ -17,8 +17,7 @@ public class PlayerLauncher : MonoBehaviour
     private int controllingTouchId = -2; // -2 == not assigned
     // PlayerLauncher no longer handles smoothing or movement directly.
 
-    // Public accessor for other scripts (read-only)
-    public PhysicsGamePlayer Player => player;
+    // Note: player field is serialized for Inspector access; don't expose a redundant public accessor.
 
 #if UNITY_EDITOR
     private void OnValidate()
@@ -32,8 +31,6 @@ public class PlayerLauncher : MonoBehaviour
 #endif
     // When running in the Editor, the mouse will be used to simulate a single touch.
     // This is handy for testing touch logic without a touch device.
-    private bool mouseTouchActive = false;
-    private Vector2 lastMousePosition = Vector2.zero;
 
     private void OnEnable()
     {
@@ -89,27 +86,20 @@ public class PlayerLauncher : MonoBehaviour
             // No touches available - treat left mouse button as simulated touch for Editor/useful testing.
             // Note: This is a single-touch simulation only.
             var mouse = Mouse.current;
-            if (mouse != null && mouse.leftButton.wasPressedThisFrame)
+            if (mouse != null)
             {
-                mouseTouchActive = true;
-                lastMousePosition = mouse.position.ReadValue();
-                BeginFollow(lastMousePosition, -1);
-            }
-            else if (mouse != null && mouse.leftButton.wasReleasedThisFrame)
-            {
-                Vector2 mousePos = mouse.position.ReadValue();
-                mouseTouchActive = false;
-                EndFollow();
-            }
-            else if (mouseTouchActive && mouse != null)
-            {
-                Vector2 mousePos = mouse.position.ReadValue();
-                if (mousePos != lastMousePosition)
+                if (mouse.leftButton.wasPressedThisFrame)
                 {
-                    // Optional: log movement if needed
-                    // Debug.Log($"Simulated touch moved: id=-1 position={mousePos}");
-                    lastMousePosition = mousePos;
-                    UpdateFollow(mousePos);
+                    BeginFollow(mouse.position.ReadValue(), -1);
+                }
+                else if (mouse.leftButton.wasReleasedThisFrame)
+                {
+                    EndFollow();
+                }
+                else if (mouse.leftButton.isPressed)
+                {
+                    // While the mouse button is pressed, continuously update the follow target.
+                    UpdateFollow(mouse.position.ReadValue());
                 }
             }
         }

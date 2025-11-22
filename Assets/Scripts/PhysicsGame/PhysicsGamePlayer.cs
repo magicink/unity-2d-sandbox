@@ -13,6 +13,12 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
     [Tooltip("Multiplier applied to the computed release velocity when physics is re-enabled")]
     [SerializeField] private float throwVelocityMultiplier = 1f;
 
+    [Header("Respawn Settings")]
+    [Tooltip("Enable respawning the player when it falls below the bottom of the camera viewport.")]
+    [SerializeField] private bool respawnIfBelowViewport = true;
+    [Tooltip("Extra vertical margin in viewport space to consider a fall (negative values respawn sooner).")]
+    [SerializeField] private float viewportBottomMargin = 0f;
+
     // Drag state fields
     private Rigidbody2D rb2D;
     private bool isDragging = false;
@@ -36,6 +42,44 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
     protected override void Update()
     {
         base.Update();
+
+        // Check if the player is off-screen below the camera viewport and optionally respawn
+        if (respawnIfBelowViewport && !isDragging)
+        {
+            Camera cam = Camera.main;
+            if (cam != null)
+            {
+                Vector3 viewportPos = cam.WorldToViewportPoint(transform.position);
+                if (viewportPos.y < 0f + viewportBottomMargin)
+                {
+                    RespawnToViewportCenter(cam, viewportPos.z);
+                }
+            }
+        }
+    }
+
+    private void RespawnToViewportCenter(Camera cam, float zDepth)
+    {
+        // Calculate world position at the center of the camera viewport using the object's depth
+        Vector3 centerViewport = new Vector3(0.5f, 0.5f, zDepth);
+        Vector3 spawnWorld = cam.ViewportToWorldPoint(centerViewport);
+
+        // Move the transform and reset velocities. Use the Rigidbody2D if available.
+        transform.position = spawnWorld;
+        if (rb2D != null)
+        {
+            rb2D.position = spawnWorld;
+#if UNITY_2023_1_OR_NEWER
+            rb2D.linearVelocity = Vector2.zero;
+#else
+            rb2D.velocity = Vector2.zero;
+#endif
+            rb2D.angularVelocity = 0f;
+        }
+
+        // Reset drag-related bookkeeping so the state machine has coherent values
+        lastDragPosition = spawnWorld;
+        lastDragTime = Time.time;
     }
 
     protected override PhysicsState GetInitialState()
