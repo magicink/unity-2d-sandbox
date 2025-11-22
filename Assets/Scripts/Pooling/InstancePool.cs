@@ -16,12 +16,30 @@ namespace Sandbox.Pooling
         [SerializeField] private bool verboseWarnings = true;
         [SerializeField] private Transform instancesParent;
 
+        // Expose the prefab to consumers (read-only)
+        public GameObject Prefab => prefab;
+
         private readonly Queue<GameObject> available = new Queue<GameObject>();
         private readonly HashSet<GameObject> inUse = new HashSet<GameObject>();
         private readonly List<GameObject> returnBuffer = new List<GameObject>();
         private readonly Dictionary<GameObject, IPooledInstance> listeners = new Dictionary<GameObject, IPooledInstance>();
 
         private bool initialized;
+
+        private void OnValidate()
+        {
+            // Guard: if the prefab references the same GameObject that hosts this component, warn the user.
+            if (prefab == gameObject)
+            {
+                Debug.LogWarning($"InstancePool on {name} has its prefab set to the same GameObject as the pool, which can cause recursion/instantiation issues.", this);
+            }
+
+            // Guard: if the prefab contains an InstancePool component already (nested pool prefabs), warn.
+            if (prefab != null && prefab.GetComponent<InstancePool>() != null)
+            {
+                Debug.LogWarning($"InstancePool prefab assigned to {name} already contains an InstancePool component. Instantiating this prefab may create nested pools.", this);
+            }
+        }
 
         private void Awake()
         {
@@ -164,7 +182,7 @@ namespace Sandbox.Pooling
             instance.SetActive(false);
             instance.transform.SetParent(instancesParent, false);
 
-            if (listeners.TryGetValue(instance, out var listener))
+            if (listeners.TryGetValue(instance, out IPooledInstance listener))
             {
                 listener.OnReturnedToPool();
             }
@@ -230,7 +248,7 @@ namespace Sandbox.Pooling
         {
             instance.SetActive(true);
 
-            if (listeners.TryGetValue(instance, out var listener))
+            if (listeners.TryGetValue(instance, out IPooledInstance listener))
             {
                 listener.OnTakenFromPool();
             }
