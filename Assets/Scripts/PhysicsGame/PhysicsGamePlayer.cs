@@ -123,17 +123,22 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
         dragTarget = worldPosition;
     }
 
-    public void EndDragAt()
+    public void EndDragAt(Vector3? overrideVelocity = null)
     {
         if (!isDragging) return;
         isDragging = false;
 
-        // compute throw velocity from last position/time
+        // compute throw velocity from last position/time unless an override velocity was provided
         Vector3 currentPos = transform.position;
         float dt = Time.time - lastDragTime;
         Vector3 velocity = Vector3.zero;
         if (dt > 0f)
             velocity = (currentPos - lastDragPosition) / dt * throwVelocityMultiplier;
+
+        if (overrideVelocity.HasValue)
+        {
+            velocity = overrideVelocity.Value;
+        }
 
         if (rb2D != null)
         {

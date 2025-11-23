@@ -21,6 +21,14 @@ public class PlayerLauncher : MonoBehaviour
     [Tooltip("World-space radius of the gizmo circles representing touch start/end points.")]
     [SerializeField] private float gizmoRadius = 0.15f;
 
+    [Header("Slingshot")]
+    [Tooltip("Enable slingshot-style launch when the user releases a drag.")]
+    [SerializeField] private bool enableSlingshot = true;
+    [Tooltip("Force multiplier applied to the slingshot vector (anchor - release).")]
+    [SerializeField] private float slingshotForceMultiplier = 10f;
+    [Tooltip("Minimum pull distance (world units) to consider a valid slingshot launch.")]
+    [SerializeField] private float minSlingshotDistance = 0.05f;
+
     // Gizmo storage for touch start and end locations
     private Vector3 gizmoStartWorld = Vector3.zero;
     private Vector3 gizmoEndWorld = Vector3.zero;
@@ -202,7 +210,36 @@ public class PlayerLauncher : MonoBehaviour
         Debug.Log($"PlayerLauncher.EndFollow: Touch ended: id={previousId}");
         // Notify the player's state machine that the drag/follow has ended
         Debug.Log("PlayerLauncher.EndFollow: calling player.EndDragAt()", this);
-        player?.EndDragAt();
+        // Compute slingshot velocity if enabled
+        if (player != null)
+        {
+            Vector3 anchor = gizmoStartWorld;
+            Vector3 release = rawFollowWorldPosition != Vector3.zero ? rawFollowWorldPosition : (player != null ? player.transform.position : Vector3.zero);
+                Vector3 launchVec = Vector3.zero;
+                if (enableSlingshot)
+                {
+                    // only apply slingshot when pulled beyond the minimum distance
+                    Vector3 effective = simulateTension ? lastFollowWorldPosition : release;
+                    float pullDistance = (effective - anchor).magnitude;
+                    if (pullDistance >= minSlingshotDistance)
+                    {
+                        if (simulateTension)
+                        {
+                            // Use the effective target so that tension reduces the resulting velocity
+                            launchVec = (anchor - effective) * slingshotForceMultiplier;
+                        }
+                        else
+                        {
+                            // Use raw input for direct slingshot force
+                            launchVec = (anchor - release) * slingshotForceMultiplier;
+                        }
+                    }
+                }
+            if (enableSlingshot && launchVec != Vector3.zero)
+                player?.EndDragAt(launchVec);
+            else
+                player?.EndDragAt();
+        }
 
         // Capture the final location for debugging gizmos
         gizmoEndWorld = lastFollowWorldPosition != Vector3.zero ? lastFollowWorldPosition : (player != null ? player.transform.position : Vector3.zero);
