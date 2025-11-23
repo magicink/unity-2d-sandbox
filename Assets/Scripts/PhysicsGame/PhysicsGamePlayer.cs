@@ -96,7 +96,7 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
         }
     }
 
-    private void RespawnToWorldOrigin(Camera cam, float zDepth)
+    public void RespawnToWorldOrigin(Camera cam, float zDepth)
     {
         // Respawn the player at world origin (0,0), keeping the same z-depth so layering remains correct.
         Vector3 spawnWorld = new Vector3(0f, 0f, zDepth);

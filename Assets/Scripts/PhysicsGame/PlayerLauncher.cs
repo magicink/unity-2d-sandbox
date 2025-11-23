@@ -21,6 +21,10 @@ public class PlayerLauncher : MonoBehaviour
     [Tooltip("World-space radius of the gizmo circles representing touch start/end points.")]
     [SerializeField] private float gizmoRadius = 0.15f;
 
+    [Header("Grounding")]
+    [Tooltip("LayerMask used to detect ground objects. Default tries to use a layer named 'Ground'.")]
+    [SerializeField] private LayerMask groundLayerMask = 0;
+
     [Header("Slingshot")]
     [Tooltip("Enable slingshot-style launch when the user releases a drag.")]
     [SerializeField] private bool enableSlingshot = true;
@@ -56,6 +60,12 @@ public class PlayerLauncher : MonoBehaviour
             Debug.LogWarning($"{nameof(PlayerLauncher)}: 'player' reference is not assigned in the Inspector.", this);
         if (worldCamera == null)
             worldCamera = Camera.main;
+        if (groundLayerMask == 0)
+        {
+            int groundLayer = LayerMask.NameToLayer("Ground");
+            if (groundLayer >= 0)
+                groundLayerMask = 1 << groundLayer;
+        }
     }
 #endif
     // When running in the Editor, the mouse will be used to simulate a single touch.
@@ -99,7 +109,16 @@ public class PlayerLauncher : MonoBehaviour
             return;
         }
         Instance = this;
+        // Try to auto-assign a default ground mask to the 'Ground' layer (if available)
+        if (groundLayerMask == 0)
+        {
+            int groundLayer = LayerMask.NameToLayer("Ground");
+            if (groundLayer >= 0)
+                groundLayerMask = 1 << groundLayer;
+        }
     }
+
+    // Editor-only validation and auto-assignment done in top-level OnValidate to avoid duplicate definitions
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -231,31 +250,66 @@ public class PlayerLauncher : MonoBehaviour
         {
             Vector3 anchor = gizmoStartWorld;
             Vector3 release = rawFollowWorldPosition != Vector3.zero ? rawFollowWorldPosition : (player != null ? player.transform.position : Vector3.zero);
-                Vector3 launchVec = Vector3.zero;
-                if (enableSlingshot)
+
+            // If the player is grounded or release happened over a ground object, just reset to the origin
+            bool releaseOverGround = false;
+            try
+            {
+                if (player.IsGrounded)
+                    releaseOverGround = true;
+                else
+                    releaseOverGround = IsOverGroundObject(release);
+            }
+            catch (System.Exception)
+            {
+                // In case player is null or IsGrounded throws, default to false
+                releaseOverGround = false;
+            }
+            if (releaseOverGround)
+            {
+                Camera cam = worldCamera != null ? worldCamera : Camera.main;
+                float zDepth = 0f;
+                if (cam != null && player != null)
+                    zDepth = Mathf.Abs(cam.transform.position.z - player.transform.position.z);
+
+                // Reset player position to origin and clear velocities
+                player.RespawnToWorldOrigin(cam, zDepth);
+                player.EndDragAt(Vector3.zero);
+
+                // Update gizmo end/clear rawFollow and exit early to avoid slingshot computation
+                gizmoEndWorld = player.transform.position;
+                hasGizmoEnd = true;
+                rawFollowWorldPosition = Vector3.zero;
+                return;
+            }
+
+            // Compute slingshot vector (if enabled). Use the effective target when using simulated tension
+            Vector3 launchVec = Vector3.zero;
+            if (enableSlingshot)
+            {
+                Vector3 effective = simulateTension ? lastFollowWorldPosition : release;
+                float pullDistance = (effective - anchor).magnitude;
+                if (pullDistance >= minSlingshotDistance)
                 {
-                    // only apply slingshot when pulled beyond the minimum distance
-                    Vector3 effective = simulateTension ? lastFollowWorldPosition : release;
-                    float pullDistance = (effective - anchor).magnitude;
-                    if (pullDistance >= minSlingshotDistance)
+                    if (simulateTension)
                     {
-                        if (simulateTension)
-                        {
-                            // Use the effective target so that tension reduces the resulting velocity
-                            launchVec = (anchor - effective) * slingshotForceMultiplier;
-                        }
-                        else
-                        {
-                            // Use raw input for direct slingshot force
-                            launchVec = (anchor - release) * slingshotForceMultiplier;
-                        }
+                        // Use the effective target so that tension reduces the resulting velocity
+                        launchVec = (anchor - effective) * slingshotForceMultiplier;
+                    }
+                    else
+                    {
+                        // Use raw input for direct slingshot force
+                        launchVec = (anchor - release) * slingshotForceMultiplier;
                     }
                 }
+            }
+
             if (enableSlingshot && launchVec != Vector3.zero)
                 player?.EndDragAt(launchVec);
             else
                 player?.EndDragAt();
-        }
+
+            }
 
         // Capture the final location for debugging gizmos
         gizmoEndWorld = lastFollowWorldPosition != Vector3.zero ? lastFollowWorldPosition : (player != null ? player.transform.position : Vector3.zero);
@@ -357,5 +411,17 @@ public class PlayerLauncher : MonoBehaviour
         float z = Mathf.Abs(cam.transform.position.z - (player != null ? player.transform.position.z : 0f));
         Vector3 sp = new Vector3(screenPosition.x, screenPosition.y, z);
         return cam.ScreenToWorldPoint(sp);
+    }
+
+    /// <summary>
+    /// Determines if the given world position overlaps any collider on the configured ground layer mask.
+    /// </summary>
+    private bool IsOverGroundObject(Vector3 worldPosition)
+    {
+        if (groundLayerMask == 0)
+            return false;
+        Vector2 point = new Vector2(worldPosition.x, worldPosition.y);
+        Collider2D c = Physics2D.OverlapPoint(point, groundLayerMask.value);
+        return c != null;
     }
 }
