@@ -19,6 +19,12 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
     [Tooltip("Extra vertical margin in viewport space to consider a fall (negative values respawn sooner).")]
     [SerializeField] private float viewportBottomMargin = 0f;
 
+    [Header("Grounding")]
+    [Tooltip("If true, landing requires the player to be in contact with a ground object (layered with 'Ground' by default).")]
+    [SerializeField] private bool requireContactToLand = true;
+    [Tooltip("LayerMask used to detect ground objects. Default tries to use a layer named 'Ground'.")]
+    [SerializeField] private LayerMask groundLayerMask = 0;
+
     // Drag state fields
     private Rigidbody2D rb2D;
     private bool isDragging = false;
@@ -31,6 +37,8 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
     public event Action Launched;
     public event Action Landed;
     private bool isAirborne = false;
+    private int groundContactCount = 0;
+    public bool IsGrounded => groundContactCount > 0;
     public bool IsAirborne => isAirborne;
     [Tooltip("Minimum speed under which the player is considered to have landed (world units/sec).")]
     [SerializeField] private float landingSpeedThreshold = 0.1f;
@@ -46,7 +54,27 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
         TryGetComponent(out rb2D);
         if (rb2D != null)
             previousSimulatedState = rb2D.simulated;
+
+        // If groundLayerMask is unset, try to auto-assign a layer named 'Ground'
+        if (groundLayerMask == 0)
+        {
+            int groundLayer = LayerMask.NameToLayer("Ground");
+            if (groundLayer >= 0)
+                groundLayerMask = 1 << groundLayer;
+        }
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (groundLayerMask == 0)
+        {
+            int groundLayer = LayerMask.NameToLayer("Ground");
+            if (groundLayer >= 0)
+                groundLayerMask = 1 << groundLayer;
+        }
+    }
+#endif
 
     // Update is called once per frame
     protected override void Update()
@@ -96,6 +124,8 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
         // Reset drag-related bookkeeping so the state machine has coherent values
         lastDragPosition = spawnWorld;
         lastDragTime = Time.time;
+        // clear any contact state because we're moving the player
+        groundContactCount = 0;
     }
 
     protected override PhysicsState GetInitialState()
@@ -111,7 +141,9 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
         if (rb2D != null && isAirborne && rb2D.simulated)
         {
             float speedSqr = rb2D.linearVelocity.sqrMagnitude;
-            if (speedSqr < landingSpeedThreshold * landingSpeedThreshold)
+            bool belowSpeed = speedSqr < landingSpeedThreshold * landingSpeedThreshold;
+            bool contactOk = !requireContactToLand || IsGrounded;
+            if (belowSpeed && contactOk)
             {
                 isAirborne = false;
                 Landed?.Invoke();
@@ -142,6 +174,9 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
 #endif
             rb2D.angularVelocity = 0f;
         }
+
+        // During drag we are actively controlled and not considered airborne
+        isAirborne = false;
 
         BeginDrag();
     }
@@ -184,7 +219,105 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
             rb2D.angularVelocity = 0f;
         }
 
+        // If we just re-enabled simulation with a non-trivial velocity, mark the player launched
+        if (rb2D != null)
+        {
+            float sqr = velocity.sqrMagnitude;
+            if (sqr > landingSpeedThreshold * landingSpeedThreshold)
+            {
+                isAirborne = true;
+                Launched?.Invoke();
+            }
+            else
+            {
+                // If velocity is small, consider the contact state: if we're touching ground or we don't require contact, mark landed
+                if (!requireContactToLand || IsGrounded)
+                {
+                    isAirborne = false;
+                    Landed?.Invoke();
+                }
+                else
+                {
+                    // Small velocity but not touching ground - remain airborne
+                    isAirborne = true;
+                }
+            }
+        }
+
         EndDrag();
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision == null) return;
+        var go = collision.gameObject;
+        if (go != null && IsGroundObject(go))
+        {
+            groundContactCount++;
+            // if we are airborne and we meet landing criteria, mark landed
+            if (isAirborne && rb2D != null)
+            {
+                float speedSqr = rb2D.linearVelocity.sqrMagnitude;
+                if (!requireContactToLand || speedSqr < landingSpeedThreshold * landingSpeedThreshold)
+                {
+                    isAirborne = false;
+                    Landed?.Invoke();
+                }
+            }
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision == null) return;
+        var go = collision.gameObject;
+        if (go != null && IsGroundObject(go))
+        {
+            groundContactCount = Mathf.Max(0, groundContactCount - 1);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other == null) return;
+        var go = other.gameObject;
+        if (go != null && IsGroundObject(go))
+        {
+            groundContactCount++;
+            if (isAirborne && rb2D != null)
+            {
+                float speedSqr = rb2D.linearVelocity.sqrMagnitude;
+                if (!requireContactToLand || speedSqr < landingSpeedThreshold * landingSpeedThreshold)
+                {
+                    isAirborne = false;
+                    Landed?.Invoke();
+                }
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other == null) return;
+        var go = other.gameObject;
+        if (go != null && IsGroundObject(go))
+        {
+            groundContactCount = Mathf.Max(0, groundContactCount - 1);
+        }
+    }
+
+    /// <summary>
+    /// Determines whether the specified GameObject counts as ground using the configured LayerMask or tag.
+    /// </summary>
+    private bool IsGroundObject(GameObject go)
+    {
+        if (go == null) return false;
+        if (groundLayerMask != 0)
+        {
+            if ((groundLayerMask.value & (1 << go.layer)) != 0)
+                return true;
+        }
+        return false;
     }
 
     // Base state type for this player's state machine
