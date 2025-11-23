@@ -105,6 +105,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cc96c4a2202b1b46a66f5b9cb38cfe8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhysicsGamePlayer
+  followSmoothing: 0
+  throwVelocityMultiplier: 1
+  respawnIfBelowViewport: 1
+  viewportBottomMargin: 0
+  landingSpeedThreshold: 0.1
+  forceReenableSimulatedOnEnd: 1
 --- !u!58 &8349506567259749898
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -153,9 +159,9 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 0.75
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
+  m_AngularDamping: 1.5
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:

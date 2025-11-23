@@ -169,37 +169,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &354037331
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 354037332}
-  m_Layer: 0
-  m_Name: Player Launcher
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &354037332
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 354037331}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.19417, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &850883045 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2460131051937482323, guid: 6a563ae8df615c541a3c4ee89d03d2ea, type: 3}
@@ -374,6 +343,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a631c58b9b95934a9c51f2dbbf0d0a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerLauncher
+  player: {fileID: 2041528708}
+  worldCamera: {fileID: 1908177606}
+  drawTouchGizmos: 1
+  gizmoRadius: 0.15
+  enableSlingshot: 1
+  slingshotForceMultiplier: 10
+  minSlingshotDistance: 0.05
+  simulateTension: 1
+  tensionStiffness: 0.25
+  maxPullDistance: 100
 --- !u!4 &1571547179
 Transform:
   m_ObjectHideFlags: 0
@@ -434,6 +413,7 @@ GameObject:
   - component: {fileID: 1908177606}
   - component: {fileID: 1908177605}
   - component: {fileID: 1908177608}
+  - component: {fileID: 1908177609}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -559,6 +539,21 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &1908177609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1908177604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 740f033f1d46e764ba1d71ea0a65577e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PhysicsGameCameraController
+  player: {fileID: 2041528708}
+  horizontalLerpSpeed: 10
+  snapOnStart: 1
 --- !u!1 &1908306696
 GameObject:
   m_ObjectHideFlags: 0
@@ -612,6 +607,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2041528708 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1576837606893572369, guid: 95826c76ae309de42b9b3bec28997bd9, type: 3}
+  m_PrefabInstance: {fileID: 3421077660776373635}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cc96c4a2202b1b46a66f5b9cb38cfe8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PhysicsGamePlayer
 --- !u!1001 &1553110940213276903
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -804,4 +810,3 @@ SceneRoots:
   - {fileID: 1571547179}
   - {fileID: 1423331240}
   - {fileID: 1123475264}
-  - {fileID: 354037332}
