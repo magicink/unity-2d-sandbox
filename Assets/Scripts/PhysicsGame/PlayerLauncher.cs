@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Sandbox.StateMachine;
 using UnityEngine.InputSystem.EnhancedTouch;
 
-public class PlayerLauncher : MonoBehaviour
+public class PlayerLauncher : AbstractStateMachine<PlayerLauncher.LaunchState>
 {
     /// <summary>
     /// Singleton instance of the PlayerLauncher. Use this property to access the active launcher in the scene.
@@ -44,6 +45,11 @@ public class PlayerLauncher : MonoBehaviour
     private Vector3 rawFollowWorldPosition = Vector3.zero;
     // When the player is launched/in-flight the launcher should ignore input
     private bool playerInFlight = false;
+
+    // State machine state instances (created in Awake)
+    private IdleState idleState;
+    private FollowingState followingState;
+    private DisabledState disabledState;
 
     // PlayerLauncher does not control physics directly anymore - player handles it in its state machine
     // Whether the launcher currently controls the player's movement
@@ -102,6 +108,11 @@ public class PlayerLauncher : MonoBehaviour
 
     private void Awake()
     {
+        // Create states before base Start runs so GetInitialState can return a valid state
+        idleState = new IdleState(this);
+        followingState = new FollowingState(this);
+        disabledState = new DisabledState(this);
+
         // If another instance is already set and is not this, destroy the duplicate. This guards against
         // duplicates in Awake order or when creating/destroying objects at runtime.
         if (Instance != null && Instance != this)
@@ -120,9 +131,14 @@ public class PlayerLauncher : MonoBehaviour
         }
     }
 
+    protected override LaunchState GetInitialState()
+    {
+        return idleState;
+    }
+
     // Editor-only validation and auto-assignment done in top-level OnValidate to avoid duplicate definitions
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    protected override void Start()
     {
         if (worldCamera == null)
             worldCamera = Camera.main;
@@ -134,66 +150,22 @@ public class PlayerLauncher : MonoBehaviour
             player.Landed += OnPlayerLanded;
             playerInFlight = player.IsAirborne;
         }
+        // Let the base state machine assign the initial state
+        base.Start();
+        // If the player is already airborne at start, enter DisabledState
+        if (playerInFlight && disabledState != null)
+            ChangeState(disabledState);
     }
 
     // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
-        // If the player is airborne/in-flight, ignore input
-        if (player != null && (player.IsAirborne || playerInFlight))
-            return;
-        // PlayerLauncher does not manage player's Rigidbody - the player manages physics when dragging.
-
-        // If the new Input System EnhancedTouch is available, use it
-        if (UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches.Count > 0)
-        {
-            foreach (var t in UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches)
-            {
-                // If we are not already following, take the first Began touch as the controller
-                if (!isFollowing && t.phase == UnityEngine.InputSystem.TouchPhase.Began)
-                {
-                    BeginFollow(t.screenPosition, (int)t.touchId);
-                    continue;
-                }
-
-                if (isFollowing && (int)t.touchId == controllingTouchId)
-                {
-                    if (t.phase == UnityEngine.InputSystem.TouchPhase.Moved || t.phase == UnityEngine.InputSystem.TouchPhase.Stationary)
-                    {
-                        UpdateFollow(t.screenPosition);
-                    }
-                    else if (t.phase == UnityEngine.InputSystem.TouchPhase.Ended || t.phase == UnityEngine.InputSystem.TouchPhase.Canceled)
-                    {
-                        EndFollow();
-                    }
-                }
-            }
-        }
-        else
-        {
-            // No touches available - treat left mouse button as simulated touch for Editor/useful testing.
-            // Note: This is a single-touch simulation only.
-            var mouse = Mouse.current;
-            if (mouse != null)
-            {
-                if (mouse.leftButton.wasPressedThisFrame)
-                {
-                    BeginFollow(mouse.position.ReadValue(), -1);
-                }
-                else if (mouse.leftButton.wasReleasedThisFrame)
-                {
-                    EndFollow();
-                }
-                else if (mouse.leftButton.isPressed)
-                {
-                    // While the mouse button is pressed, continuously update the follow target.
-                    UpdateFollow(mouse.position.ReadValue());
-                }
-            }
-        }
+        // Let AbstractStateMachine run the current state's Tick.
+        base.Update();
     }
+    
 
-    private void BeginFollow(Vector2 screenPosition, int touchId)
+    private void StartFollowingInternal(Vector2 screenPosition, int touchId)
     {
         if (player == null)
         {
@@ -229,9 +201,11 @@ public class PlayerLauncher : MonoBehaviour
         hasGizmoEnd = false;
         gizmoStartWorld = worldPos;
         // lastFollowWorldPosition is already set to the effective target; do not overwrite with the raw worldPos
+        // Enter the Following state so the state machine takes over updates
+        ChangeState(followingState);
     }
 
-    private void UpdateFollow(Vector2 screenPosition)
+    private void ContinueFollowingInternal(Vector2 screenPosition)
     {
         if (!isFollowing || player == null)
             return;
@@ -242,7 +216,7 @@ public class PlayerLauncher : MonoBehaviour
         player?.UpdateDragTarget(effectiveWorld);
     }
 
-    private void EndFollow()
+    private void EndFollowingInternal(Vector3? overrideVelocity = null)
     {
         if (!isFollowing)
             return;
@@ -276,7 +250,7 @@ public class PlayerLauncher : MonoBehaviour
                 // In case player is null or IsGrounded throws, default to false
                 releaseOverGround = false;
             }
-            if (releaseOverGround)
+                if (releaseOverGround)
             {
                 Camera cam = worldCamera != null ? worldCamera : Camera.main;
                 float zDepth = 0f;
@@ -291,6 +265,8 @@ public class PlayerLauncher : MonoBehaviour
                 gizmoEndWorld = player.transform.position;
                 hasGizmoEnd = true;
                 rawFollowWorldPosition = Vector3.zero;
+                // After respawn, go back to idle state so input can begin again
+                ChangeState(idleState);
                 return;
             }
 
@@ -322,6 +298,17 @@ public class PlayerLauncher : MonoBehaviour
 
             }
 
+            // Transition states depending on whether the player is airborne after release
+            if (player != null && player.IsAirborne)
+            {
+                // The player will be in flight — disable input until landed
+                ChangeState(disabledState);
+            }
+            else
+            {
+                ChangeState(idleState);
+            }
+
         // Capture the final location for debugging gizmos
         gizmoEndWorld = lastFollowWorldPosition != Vector3.zero ? lastFollowWorldPosition : (player != null ? player.transform.position : Vector3.zero);
         hasGizmoEnd = true;
@@ -334,11 +321,17 @@ public class PlayerLauncher : MonoBehaviour
     private void OnPlayerLaunched()
     {
         playerInFlight = true;
+        // Enter a state where the launcher ignores input while the player is airborne.
+        if (disabledState != null)
+            ChangeState(disabledState);
     }
 
     private void OnPlayerLanded()
     {
         playerInFlight = false;
+        // Return to Idle state after landing
+        if (idleState != null)
+            ChangeState(idleState);
     }
 
     [Header("Tension")]
@@ -422,6 +415,103 @@ public class PlayerLauncher : MonoBehaviour
         float z = Mathf.Abs(cam.transform.position.z - (player != null ? player.transform.position.z : 0f));
         Vector3 sp = new Vector3(screenPosition.x, screenPosition.y, z);
         return cam.ScreenToWorldPoint(sp);
+    }
+
+    // State machine base / skeleton for the player launcher. This is the first step
+    // — it adds states and keeps the component behavior intact while enabling a
+    // future refactor that moves logic into these states.
+    public abstract class LaunchState : StateBase
+    {
+        protected readonly PlayerLauncher Machine;
+        protected LaunchState(PlayerLauncher machine) { Machine = machine; }
+    }
+
+    public sealed class IdleState : LaunchState
+    {
+        public IdleState(PlayerLauncher machine) : base(machine) { }
+        public override void Enter() { }
+        public override void Tick(float deltaTime)
+        {
+            if (Machine.player == null) return;
+
+            // If the player is airborne, do not start a new pull
+            if (Machine.player.IsAirborne || Machine.playerInFlight) return;
+
+            if (UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches.Count > 0)
+            {
+                foreach (var t in UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches)
+                {
+                    if (t.phase == UnityEngine.InputSystem.TouchPhase.Began)
+                    {
+                        Machine.StartFollowingInternal(t.screenPosition, (int)t.touchId);
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                var mouse = Mouse.current;
+                if (mouse != null && mouse.leftButton.wasPressedThisFrame)
+                {
+                    Machine.StartFollowingInternal(mouse.position.ReadValue(), -1);
+                }
+            }
+        }
+        public override void Exit() { }
+    }
+
+    public sealed class FollowingState : LaunchState
+    {
+        public FollowingState(PlayerLauncher machine) : base(machine) { }
+        public override void Enter() { }
+        public override void Tick(float deltaTime)
+        {
+            if (!Machine.isFollowing || Machine.player == null) return;
+
+            if (UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches.Count > 0)
+            {
+                foreach (var t in UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches)
+                {
+                    if ((int)t.touchId == Machine.controllingTouchId)
+                    {
+                        if (t.phase == UnityEngine.InputSystem.TouchPhase.Moved || t.phase == UnityEngine.InputSystem.TouchPhase.Stationary)
+                        {
+                            Machine.ContinueFollowingInternal(t.screenPosition);
+                        }
+                        else if (t.phase == UnityEngine.InputSystem.TouchPhase.Ended || t.phase == UnityEngine.InputSystem.TouchPhase.Canceled)
+                        {
+                            Machine.EndFollowingInternal();
+                        }
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                var mouse = Mouse.current;
+                if (mouse != null)
+                {
+                    if (mouse.leftButton.wasReleasedThisFrame)
+                        Machine.EndFollowingInternal();
+                    else if (mouse.leftButton.isPressed)
+                        Machine.ContinueFollowingInternal(mouse.position.ReadValue());
+                }
+            }
+        }
+        public override void Exit() { }
+    }
+
+    public sealed class DisabledState : LaunchState
+    {
+        public DisabledState(PlayerLauncher machine) : base(machine) { }
+        public override void Enter()
+        {
+            // Cancel any active follow when entering disabled state
+            Machine.isFollowing = false;
+            Machine.controllingTouchId = -2;
+        }
+        public override void Tick(float deltaTime) { /* ignore input while disabled */ }
+        public override void Exit() { }
     }
 
     /// <summary>
