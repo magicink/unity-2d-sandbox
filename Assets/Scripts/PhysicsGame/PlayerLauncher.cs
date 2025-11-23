@@ -24,6 +24,8 @@ public class PlayerLauncher : MonoBehaviour
     [Header("Grounding")]
     [Tooltip("LayerMask used to detect ground objects. Default tries to use a layer named 'Ground'.")]
     [SerializeField] private LayerMask groundLayerMask = 0;
+    [Tooltip("If true, a touch that starts over a ground object will not begin a pull/drag.")]
+    [SerializeField] private bool preventStartOverGround = true;
 
     [Header("Slingshot")]
     [Tooltip("Enable slingshot-style launch when the user releases a drag.")]
@@ -206,6 +208,15 @@ public class PlayerLauncher : MonoBehaviour
 
         // Convert to world position and notify player state machine to begin drag
         var worldPos = ScreenToWorld(screenPosition);
+        // Prevent beginning a pull if the touch began over a ground object (configurable)
+        if (preventStartOverGround && IsOverGroundObject(worldPos))
+        {
+            Debug.Log($"PlayerLauncher.BeginFollow: blocked pull start because touch began over ground at {worldPos}", this);
+            // reset follow state
+            controllingTouchId = -2;
+            isFollowing = false;
+            return;
+        }
         player?.BeginDragAt(worldPos);
         // Set both raw-follow and the initial effective-follow position during Begin
         rawFollowWorldPosition = worldPos;
