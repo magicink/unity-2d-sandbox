@@ -27,6 +27,9 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
     private float lastDragTime = 0f;
     private bool previousSimulatedState = true;
     private Vector3 followVelocity = Vector3.zero;
+    [Header("Drag Behavior")]
+    [Tooltip("If true, always re-enable Rigidbody2D.simulated when drag ends. Useful if you want the player to resume physics regardless of previous simulated state.")]
+    [SerializeField] private bool forceReenableSimulatedOnEnd = true;
 
     private void Awake()
     {
@@ -134,12 +137,17 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
 
         if (rb2D != null)
         {
-            rb2D.simulated = previousSimulatedState;
+            Debug.Log($"PhysicsGamePlayer.EndDragAt: previousSimulatedState={previousSimulatedState} rb2D.simulated(before)={rb2D.simulated}");
+            // Re-enable simulation either by force or per saved state
+            rb2D.simulated = forceReenableSimulatedOnEnd ? true : previousSimulatedState;
 #if UNITY_2023_1_OR_NEWER
             rb2D.linearVelocity = velocity;
+            Debug.Log($"PhysicsGamePlayer.EndDragAt: rb2D.simulated(after)={rb2D.simulated} linear/velocity= {rb2D.linearVelocity}");
 #else
             rb2D.velocity = velocity;
+            Debug.Log($"PhysicsGamePlayer.EndDragAt: rb2D.simulated(after)={rb2D.simulated} velocity= {rb2D.velocity}");
 #endif
+            rb2D.angularVelocity = 0f;
         }
 
         EndDrag();
