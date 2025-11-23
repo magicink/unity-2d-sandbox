@@ -62,17 +62,16 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
                 Vector3 viewportPos = cam.WorldToViewportPoint(transform.position);
                 if (viewportPos.y < 0f + viewportBottomMargin)
                 {
-                    RespawnToViewportCenter(cam, viewportPos.z);
+                    RespawnToWorldOrigin(cam, viewportPos.z);
                 }
             }
         }
     }
 
-    private void RespawnToViewportCenter(Camera cam, float zDepth)
+    private void RespawnToWorldOrigin(Camera cam, float zDepth)
     {
-        // Calculate world position at the center of the camera viewport using the object's depth
-        Vector3 centerViewport = new Vector3(0.5f, 0.5f, zDepth);
-        Vector3 spawnWorld = cam.ViewportToWorldPoint(centerViewport);
+        // Respawn the player at world origin (0,0), keeping the same z-depth so layering remains correct.
+        Vector3 spawnWorld = new Vector3(0f, 0f, zDepth);
 
         // Move the transform and reset velocities. Use the Rigidbody2D if available.
         transform.position = spawnWorld;
