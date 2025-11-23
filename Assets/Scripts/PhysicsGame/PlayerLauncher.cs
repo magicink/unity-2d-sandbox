@@ -42,13 +42,7 @@ public class PlayerLauncher : AbstractStateMachine<PlayerLauncher.LaunchState>
     [Tooltip("Minimum pull distance (world units) to consider a valid slingshot launch.")]
     [SerializeField] private float minSlingshotDistance = 0.05f;
 
-    // Gizmo storage for touch start and end locations
-    private Vector3 gizmoStartWorld = Vector3.zero;
-    private Vector3 gizmoEndWorld = Vector3.zero;
-    private Vector3 lastFollowWorldPosition = Vector3.zero;
-    private bool hasGizmoStart = false;
-    private bool hasGizmoEnd = false;
-    private Vector3 rawFollowWorldPosition = Vector3.zero;
+    // Note: Gizmo fields and follow tracking were moved into DragController.
     // When the player is launched/in-flight the launcher should ignore input
     private bool playerInFlight = false;
 
@@ -68,8 +62,7 @@ public class PlayerLauncher : AbstractStateMachine<PlayerLauncher.LaunchState>
     private IdleState idleState;
     private FollowingState followingState;
     private DisabledState disabledState;
-    private bool isFollowing = false;
-    private int controllingTouchId = -2; // -2 == not assigned
+    // legacy follow tracking removed; DragController handles follow lifecycle
     // NOTE: The follow lifecycle functions have been moved into FollowingState.
 
     private void OnEnable()
@@ -165,26 +158,10 @@ public class PlayerLauncher : AbstractStateMachine<PlayerLauncher.LaunchState>
             preventStartOverGround, simulateTension, tensionStiffness, maxPullDistance,
             enableSlingshot, slingshotForceMultiplier, minSlingshotDistance);
 
-        // Update gizmo fields when the controller fires events
-        dragController.DragStarted += (world) =>
-        {
-            gizmoStartWorld = world;
-            hasGizmoStart = true;
-            hasGizmoEnd = false;
-            rawFollowWorldPosition = world;
-            lastFollowWorldPosition = dragController.LastFollowWorldPosition;
-        };
-        dragController.DragUpdated += (effective) =>
-        {
-            rawFollowWorldPosition = dragController.RawFollowWorldPosition;
-            lastFollowWorldPosition = effective;
-        };
-        dragController.DragEnded += (v) =>
-        {
-            hasGizmoEnd = true;
-            gizmoEndWorld = player != null ? player.transform.position : Vector3.zero;
-            rawFollowWorldPosition = Vector3.zero;
-        };
+        // Use controller-driven data; optionally log events for debugging
+        dragController.DragStarted += (world) => Log($"Drag started at {world}");
+        dragController.DragUpdated += (effective) => { /* no-op; PlayerLauncher uses DragController fields directly */ };
+        dragController.DragEnded += (v) => Log($"Drag ended. Payload={v}");
         dragController.DragStartBlocked += (pos) =>
         {
             Log($"PlayerLauncher: blocked drag start over ground at {pos}");
@@ -269,42 +246,20 @@ public class PlayerLauncher : AbstractStateMachine<PlayerLauncher.LaunchState>
     [Tooltip("Maximum allowed raw pull distance in world units; input beyond this is clamped before computing tension.")]
     [SerializeField] private float maxPullDistance = 3f;
 
-    private Vector3 ApplyTension(Vector3 rawWorld)
-    {
-        if (!simulateTension || !hasGizmoStart)
-            return rawWorld;
-
-        Vector3 dir = rawWorld - gizmoStartWorld;
-        float distance = dir.magnitude;
-        if (distance <= 0f) return rawWorld;
-
-        
-
-        float clamped = Mathf.Min(distance, Mathf.Max(0.0001f, maxPullDistance));
-
-        float effectiveDistance = clamped;
-        if (tensionStiffness > 0f)
-        {
-            // Non-linear diminishing return: effective distance = d / (1 + k * d)
-            effectiveDistance = clamped / (1f + tensionStiffness * clamped);
-        }
-
-        Vector3 dirNorm = dir / distance;
-        
-        return gizmoStartWorld + dirNorm * effectiveDistance;
-    }
+    // Tension calculation is now handled by DragController.
 
     private void OnDrawGizmos()
     {
         if (!drawTouchGizmos) return;
 
-        var hasStart = (dragController != null) ? dragController.HasGizmoStart : hasGizmoStart;
-        var hasEnd = (dragController != null) ? dragController.HasGizmoEnd : hasGizmoEnd;
-        var startWorld = (dragController != null) ? dragController.GizmoStartWorld : gizmoStartWorld;
-        var endWorld = (dragController != null) ? dragController.GizmoEndWorld : gizmoEndWorld;
-        var rawWorld = (dragController != null) ? dragController.RawFollowWorldPosition : rawFollowWorldPosition;
-        var lastWorld = (dragController != null) ? dragController.LastFollowWorldPosition : lastFollowWorldPosition;
-        var currentlyFollowing = (dragController != null) ? dragController.IsFollowing : isFollowing;
+        if (dragController == null) return;
+        var hasStart = dragController.HasGizmoStart;
+        var hasEnd = dragController.HasGizmoEnd;
+        var startWorld = dragController.GizmoStartWorld;
+        var endWorld = dragController.GizmoEndWorld;
+        var rawWorld = dragController.RawFollowWorldPosition;
+        var lastWorld = dragController.LastFollowWorldPosition;
+        var currentlyFollowing = dragController.IsFollowing;
 
         // Draw start point
         if (hasStart)
@@ -387,28 +342,7 @@ public class PlayerLauncher : AbstractStateMachine<PlayerLauncher.LaunchState>
 
             // If the player is airborne, do not start a new pull
             if (Machine.player.IsAirborne || Machine.playerInFlight) return;
-
-            if (UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches.Count > 0)
-            {
-                foreach (var t in UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches)
-                {
-                        if (t.phase == UnityEngine.InputSystem.TouchPhase.Began)
-                        {
-                            Machine.ChangeState(Machine.followingState);
-                            Machine.followingState.Begin(t.screenPosition, (int)t.touchId);
-                            return;
-                        }
-                }
-            }
-            else
-            {
-                var mouse = Mouse.current;
-                if (mouse != null && mouse.leftButton.wasPressedThisFrame)
-                {
-                    Machine.ChangeState(Machine.followingState);
-                    Machine.followingState.Begin(mouse.position.ReadValue(), -1);
-                }
-            }
+            // Idle is now event-driven by IInputProvider; no input polling here
         }
         public override void Exit() { }
     }
@@ -419,37 +353,8 @@ public class PlayerLauncher : AbstractStateMachine<PlayerLauncher.LaunchState>
         public override void Enter() { }
         public override void Tick(float deltaTime)
         {
-            if (!Machine.isFollowing || Machine.player == null) return;
-
-            if (UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches.Count > 0)
-            {
-                foreach (var t in UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches)
-                {
-                        if ((int)t.touchId == Machine.controllingTouchId)
-                    {
-                        if (t.phase == UnityEngine.InputSystem.TouchPhase.Moved || t.phase == UnityEngine.InputSystem.TouchPhase.Stationary)
-                        {
-                            Machine.followingState.Continue(t.screenPosition);
-                        }
-                        else if (t.phase == UnityEngine.InputSystem.TouchPhase.Ended || t.phase == UnityEngine.InputSystem.TouchPhase.Canceled)
-                        {
-                            Machine.followingState.End();
-                        }
-                        return;
-                    }
-                }
-            }
-            else
-            {
-                var mouse = Mouse.current;
-                if (mouse != null)
-                {
-                    if (mouse.leftButton.wasReleasedThisFrame)
-                        Machine.followingState.End();
-                    else if (mouse.leftButton.isPressed)
-                        Machine.followingState.Continue(mouse.position.ReadValue());
-                }
-            }
+            // Following logic is driven by IInputProvider + DragController; no polling needed here.
+            if (Machine.player == null) return;
         }
         
         // Begin following (moved from StartFollowingInternal)
@@ -460,37 +365,10 @@ public class PlayerLauncher : AbstractStateMachine<PlayerLauncher.LaunchState>
                 Machine.LogWarning("PlayerLauncher.BeginFollow: player reference is null.");
                 return;
             }
-
-            // Prefer using DragController (if present) - it will update player state and gizmo fields
             if (Machine.dragController != null)
             {
                 Machine.dragController.Begin(screenPosition, touchId);
-                return;
             }
-
-            Machine.controllingTouchId = touchId;
-            Machine.isFollowing = true;
-
-            Machine.Log($"Touch started: id={touchId} position={screenPosition}");
-
-            var worldPos = Machine.ScreenToWorld(screenPosition);
-            if (Machine.preventStartOverGround && Machine.IsOverGroundObject(worldPos))
-            {
-                Machine.Log($"PlayerLauncher.BeginFollow: blocked pull start because touch began over ground at {worldPos}");
-                Machine.controllingTouchId = -2;
-                Machine.isFollowing = false;
-                return;
-            }
-
-            Machine.player?.BeginDragAt(worldPos);
-            Machine.rawFollowWorldPosition = worldPos;
-            Vector3 effectiveTarget = Machine.ApplyTension(Machine.rawFollowWorldPosition);
-            Machine.lastFollowWorldPosition = effectiveTarget;
-            Machine.player?.UpdateDragTarget(effectiveTarget);
-
-            Machine.hasGizmoStart = true;
-            Machine.hasGizmoEnd = false;
-            Machine.gizmoStartWorld = worldPos;
         }
 
         // Continue following (moved from ContinueFollowingInternal)
@@ -499,14 +377,7 @@ public class PlayerLauncher : AbstractStateMachine<PlayerLauncher.LaunchState>
             if (Machine.dragController != null)
             {
                 Machine.dragController.Continue(screenPosition);
-                return;
             }
-            if (!Machine.isFollowing || Machine.player == null) return;
-            Vector3 rawWorld = Machine.ScreenToWorld(screenPosition);
-            Machine.rawFollowWorldPosition = rawWorld;
-            Vector3 effectiveWorld = Machine.ApplyTension(rawWorld);
-            Machine.lastFollowWorldPosition = effectiveWorld;
-            Machine.player?.UpdateDragTarget(effectiveWorld);
         }
 
         // End following (moved from EndFollowingInternal)
@@ -515,77 +386,6 @@ public class PlayerLauncher : AbstractStateMachine<PlayerLauncher.LaunchState>
             if (Machine.dragController != null)
             {
                 Machine.dragController.End(null, overrideVelocity);
-                return;
-            }
-            if (!Machine.isFollowing) return;
-            int previousId = Machine.controllingTouchId;
-            Machine.isFollowing = false;
-            Machine.controllingTouchId = -2;
-
-            Machine.Log($"PlayerLauncher.EndFollow: Touch ended: id={previousId}");
-            Machine.Log("PlayerLauncher.EndFollow: calling player.EndDragAt()");
-
-            if (Machine.player != null)
-            {
-                Vector3 anchor = Machine.gizmoStartWorld;
-                Vector3 release = Machine.rawFollowWorldPosition != Vector3.zero ? Machine.rawFollowWorldPosition : Machine.player.transform.position;
-
-                bool releaseOverGround = false;
-                try
-                {
-                    if (Machine.player.IsGrounded)
-                        releaseOverGround = true;
-                    else
-                        releaseOverGround = Machine.IsOverGroundObject(release);
-                }
-                catch (System.Exception)
-                {
-                    releaseOverGround = false;
-                }
-                if (releaseOverGround)
-                {
-                    Camera cam = Machine.worldCamera != null ? Machine.worldCamera : Camera.main;
-                    float zDepth = 0f;
-                    if (cam != null && Machine.player != null)
-                        zDepth = Mathf.Abs(cam.transform.position.z - Machine.player.transform.position.z);
-
-                    Machine.player.RespawnToWorldOrigin(cam, zDepth);
-                    Machine.player.EndDragAt(Vector3.zero);
-
-                    Machine.gizmoEndWorld = Machine.player.transform.position;
-                    Machine.hasGizmoEnd = true;
-                    Machine.rawFollowWorldPosition = Vector3.zero;
-                    Machine.ChangeState(Machine.idleState);
-                    return;
-                }
-
-                Vector3 launchVec = Vector3.zero;
-                if (Machine.enableSlingshot)
-                {
-                    Vector3 effective = Machine.simulateTension ? Machine.lastFollowWorldPosition : release;
-                    float pullDistance = (effective - anchor).magnitude;
-                    if (pullDistance >= Machine.minSlingshotDistance)
-                    {
-                        if (Machine.simulateTension)
-                        {
-                            launchVec = (anchor - effective) * Machine.slingshotForceMultiplier;
-                        }
-                        else
-                        {
-                            launchVec = (anchor - release) * Machine.slingshotForceMultiplier;
-                        }
-                    }
-                }
-
-                if (Machine.enableSlingshot && launchVec != Vector3.zero)
-                    Machine.player?.EndDragAt(launchVec);
-                else
-                    Machine.player?.EndDragAt(overrideVelocity.HasValue ? overrideVelocity.Value : (Vector3?)null);
-
-                if (Machine.player != null && Machine.player.IsAirborne)
-                    Machine.ChangeState(Machine.disabledState);
-                else
-                    Machine.ChangeState(Machine.idleState);
             }
         }
         public override void Exit() { }
@@ -597,8 +397,7 @@ public class PlayerLauncher : AbstractStateMachine<PlayerLauncher.LaunchState>
         public override void Enter()
         {
             // Cancel any active follow when entering disabled state
-            Machine.isFollowing = false;
-            Machine.controllingTouchId = -2;
+            // DragController stops following automatically; nothing to clear here.
         }
         public override void Tick(float deltaTime) { /* ignore input while disabled */ }
         public override void Exit() { }
@@ -607,12 +406,5 @@ public class PlayerLauncher : AbstractStateMachine<PlayerLauncher.LaunchState>
     /// <summary>
     /// Determines if the given world position overlaps any collider on the configured ground layer mask.
     /// </summary>
-    private bool IsOverGroundObject(Vector3 worldPosition)
-    {
-        if (groundLayerMask == 0)
-            return false;
-        Vector2 point = new Vector2(worldPosition.x, worldPosition.y);
-        Collider2D c = Physics2D.OverlapPoint(point, groundLayerMask.value);
-        return c != null;
-    }
+    // Ground checks are now handled by IGroundChecker implementations (SimpleGroundChecker/PhysicsGroundChecker).
     }
