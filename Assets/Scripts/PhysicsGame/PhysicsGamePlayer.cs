@@ -27,6 +27,13 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
     private float lastDragTime = 0f;
     private bool previousSimulatedState = true;
     private Vector3 followVelocity = Vector3.zero;
+    // Launch/airborne detection events
+    public event Action Launched;
+    public event Action Landed;
+    private bool isAirborne = false;
+    public bool IsAirborne => isAirborne;
+    [Tooltip("Minimum speed under which the player is considered to have landed (world units/sec).")]
+    [SerializeField] private float landingSpeedThreshold = 0.1f;
     [Header("Drag Behavior")]
     [Tooltip("If true, always re-enable Rigidbody2D.simulated when drag ends. Useful if you want the player to resume physics regardless of previous simulated state.")]
     [SerializeField] private bool forceReenableSimulatedOnEnd = true;
@@ -78,6 +85,13 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
             rb2D.velocity = Vector2.zero;
 #endif
             rb2D.angularVelocity = 0f;
+            // If we set a notable velocity, mark player as launched/in-air
+            float sqr = rb2D.linearVelocity.sqrMagnitude;
+            if (sqr > landingSpeedThreshold * landingSpeedThreshold)
+            {
+                isAirborne = true;
+                Launched?.Invoke();
+            }
         }
 
         // Reset drag-related bookkeeping so the state machine has coherent values
@@ -88,6 +102,22 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
     protected override PhysicsState GetInitialState()
     {
         return idleState;
+    }
+
+    protected override void FixedUpdate()
+    {
+        base.FixedUpdate();
+
+        // If airborne, check for landing condition (velocity low enough => landed)
+        if (rb2D != null && isAirborne && rb2D.simulated)
+        {
+            float speedSqr = rb2D.linearVelocity.sqrMagnitude;
+            if (speedSqr < landingSpeedThreshold * landingSpeedThreshold)
+            {
+                isAirborne = false;
+                Landed?.Invoke();
+            }
+        }
     }
 
     // Simple API to change states from other objects (like PlayerLauncher)

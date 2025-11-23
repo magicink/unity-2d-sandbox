@@ -36,6 +36,8 @@ public class PlayerLauncher : MonoBehaviour
     private bool hasGizmoStart = false;
     private bool hasGizmoEnd = false;
     private Vector3 rawFollowWorldPosition = Vector3.zero;
+    // When the player is launched/in-flight the launcher should ignore input
+    private bool playerInFlight = false;
 
     // PlayerLauncher does not control physics directly anymore - player handles it in its state machine
     // Whether the launcher currently controls the player's movement
@@ -79,6 +81,11 @@ public class PlayerLauncher : MonoBehaviour
         EnhancedTouchSupport.Disable();
         if (Instance == this)
             Instance = null;
+        if (player != null)
+        {
+            player.Launched -= OnPlayerLaunched;
+            player.Landed -= OnPlayerLanded;
+        }
     }
 
     private void Awake()
@@ -99,12 +106,21 @@ public class PlayerLauncher : MonoBehaviour
         if (worldCamera == null)
             worldCamera = Camera.main;
 
-        // Nothing else to initialize here; player tracks its own physics
+        // Subscribe to player's Launched/Landed events so the launcher can disable itself while the player is in flight
+        if (player != null)
+        {
+            player.Launched += OnPlayerLaunched;
+            player.Landed += OnPlayerLanded;
+            playerInFlight = player.IsAirborne;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        // If the player is airborne/in-flight, ignore input
+        if (player != null && (player.IsAirborne || playerInFlight))
+            return;
         // PlayerLauncher does not manage player's Rigidbody - the player manages physics when dragging.
 
         // If the new Input System EnhancedTouch is available, use it
@@ -248,6 +264,16 @@ public class PlayerLauncher : MonoBehaviour
         rawFollowWorldPosition = Vector3.zero;
         // odd but safe: set hasGizmoStart false so next Begin cleans it
         // keep hasGizmoStart true so the start dot remains visible unless Begin sets it otherwise
+    }
+
+    private void OnPlayerLaunched()
+    {
+        playerInFlight = true;
+    }
+
+    private void OnPlayerLanded()
+    {
+        playerInFlight = false;
     }
 
     [Header("Tension")]
