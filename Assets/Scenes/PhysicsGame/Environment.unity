@@ -374,7 +374,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1571547179}
   - component: {fileID: 1571547178}
-  - component: {fileID: 1571547180}
   m_Layer: 0
   m_Name: _GameManager
   m_TagString: Untagged
@@ -429,18 +428,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1571547180
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1571547177}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4dc53ef4b7ce0184abc6e508b6ecfc9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PoolTestRunner
 --- !u!1 &1705888512
 GameObject:
   m_ObjectHideFlags: 0
