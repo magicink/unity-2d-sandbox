@@ -29,7 +29,7 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
 
     // Drag state fields
     private Rigidbody2D rb2D;
-    private bool isDragging = false;
+    private bool isDragging;
     private Vector3 dragTarget = Vector3.zero;
     // World-space X coordinate where the drag started. Used to detect "pulled to the right" cases.
     private float dragStartWorldX = 0f;
@@ -40,7 +40,7 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
     // Launch/airborne detection events
     public event Action Launched;
     public event Action Landed;
-    private bool isAirborne = false;
+    private bool isAirborne;
     private int groundContactCount = 0;
     public bool IsGrounded => groundContactCount > 0;
     public bool IsAirborne => isAirborne;

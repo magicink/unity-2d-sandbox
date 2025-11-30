@@ -10,21 +10,21 @@ using Sandbox.Pooling;
 public class PlayerLauncher : AbstractStateMachine<LaunchState>
 {
     [Header("References")]
-    [SerializeField] private PhysicsGamePlayer player = null;
+    [SerializeField] private PhysicsGamePlayer player;
     [Tooltip("Optional: assign the Player Pool Manager InstancePool here to spawn players from the pool on pull")]
-    [SerializeField] private InstancePool playerPool = null;
-    [SerializeField] private MonoBehaviour inputProviderComponent = null; // assign a UnityInputProvider or other IInputProvider implementation
-    [SerializeField] private PhysicsGroundChecker physicsGroundChecker = null;
+    [SerializeField] private InstancePool playerPool;
+    [SerializeField] private MonoBehaviour inputProviderComponent; // assign a UnityInputProvider or other IInputProvider implementation
+    [SerializeField] private PhysicsGroundChecker physicsGroundChecker;
     [SerializeField] private LayerMask groundLayerMask = 0;
-    [SerializeField] private Camera worldCamera = null;
+    [SerializeField] private Camera worldCamera;
 
     [Header("Debug & Gizmos")]
     [SerializeField] private bool drawTouchGizmos = true;
     [SerializeField] private float gizmoRadius = 0.1f;
-    [SerializeField] private bool enableDebugLogs = false;
+    [SerializeField] private bool enableDebugLogs;
     [SerializeField] private bool enableWarningLogs = true;
     [Tooltip("Dev only: automatically simulate a single drag/launch sequence on start for testing")]
-    [SerializeField] private bool runTestOnStart = false;
+    [SerializeField] private bool runTestOnStart;
 
     [Header("Tension")]
     [SerializeField] private bool simulateTension = true;
@@ -47,7 +47,7 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
     private FollowingState followingState;
     private DisabledState disabledState;
 
-    private bool playerInFlight = false;
+    private bool playerInFlight;
     // Track pooled instances so each player can be returned to the pool when it lands
     // (supports multiple simultaneous pooled players).
     private readonly System.Collections.Generic.HashSet<PhysicsGamePlayer> pooledPlayers = new System.Collections.Generic.HashSet<PhysicsGamePlayer>();

@@ -23,7 +23,7 @@ public class GroundRepeater : MonoBehaviour
     [SerializeField] private float despawnBuffer = 1f;
 
     [Header("Debug")]
-    [SerializeField] private bool debugLogs = false;
+    [SerializeField] private bool debugLogs;
 
     // Internal state
     private readonly Dictionary<int, GameObject> spawned = new Dictionary<int, GameObject>();

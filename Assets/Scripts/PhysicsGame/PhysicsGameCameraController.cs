@@ -10,7 +10,7 @@ public class PhysicsGameCameraController : MonoBehaviour
     [SerializeField] private float horizontalLerpSpeed = 10f;
     [Tooltip("If true, the camera will instantly snap to the player at start (useful for set up).")]
     [SerializeField] private bool snapOnStart = true;
-    private bool hasInitialSnap = false;
+    private bool hasInitialSnap;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

@@ -9,7 +9,7 @@ public class UnityInputProvider : MonoBehaviour, IInputProvider
     public event Action<Vector2, int> Move;
     public event Action<Vector2, int> End;
 
-    private bool enabledInternal = false;
+    private bool enabledInternal;
 
     private void OnEnable()
     {

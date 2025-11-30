@@ -21,7 +21,7 @@ namespace Sandbox.Debugging
 
         [Header("Display")] 
         [Tooltip("When enabled, draws only while the GameObject is selected.")]
-        public bool drawWhenSelectedOnly = false;
+        public bool drawWhenSelectedOnly;
 
         [Tooltip("Line color for the gizmo.")]
         public Color lineColor = Color.green;
