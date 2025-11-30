@@ -48,8 +48,12 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
     private DisabledState disabledState;
 
     private bool playerInFlight = false;
-    // If the current player was spawned from the pool we should return it on landing
-    private bool playerFromPool = false;
+    // Track pooled instances so each player can be returned to the pool when it lands
+    // (supports multiple simultaneous pooled players).
+    private readonly System.Collections.Generic.HashSet<PhysicsGamePlayer> pooledPlayers = new System.Collections.Generic.HashSet<PhysicsGamePlayer>();
+
+    // Keep per-player event handler references so we can properly unsubscribe later
+    private readonly System.Collections.Generic.Dictionary<PhysicsGamePlayer, (Action launched, Action landed)> playerHandlers = new System.Collections.Generic.Dictionary<PhysicsGamePlayer, (Action, Action)>();
 
     // Public read-only accessors used by state classes
     public PhysicsGamePlayer Player => player;
@@ -140,8 +144,30 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
 
     private void OnDisable()
     {
-        if (player != null)
-            UnsubscribeFromPlayerEvents(player);
+        // Unsubscribe from all tracked players (current + pooled instances).
+        // Iterate over a copy of the keys so UnsubscribeFromPlayerEvents can modify
+        // the `playerHandlers` dictionary safely without invalidating the enumerator.
+        var handlerKeys = new System.Collections.Generic.List<PhysicsGamePlayer>(playerHandlers.Keys);
+        foreach (var p in handlerKeys)
+            UnsubscribeFromPlayerEvents(p);
+        playerHandlers.Clear();
+
+        // If any pooled players are still around, attempt to return them cleanly
+        if (playerPool != null && pooledPlayers.Count > 0)
+        {
+            // Iterate over a copy in case returning to the pool triggers callbacks
+            // that modify the pooledPlayers collection.
+            var pooled = new System.Collections.Generic.List<PhysicsGamePlayer>(pooledPlayers);
+            foreach (var p in pooled)
+            {
+                try
+                {
+                    playerPool.Return(p.gameObject);
+                }
+                catch (Exception) { }
+            }
+            pooledPlayers.Clear();
+        }
 
         if (inputProvider != null)
         {
@@ -177,17 +203,27 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
     private void OnPlayerLanded()
     {
         playerInFlight = false;
-        // If the player instance came from the pool, return it and clear references
-        if (playerFromPool && player != null && playerPool != null)
+        // If the player instance that landed was pooled, return it and clear any references
+        // that point to this player. Note: this is the handler for the *current* player
+        // reference; pooled players are tracked per-instance by the per-player handlers.
+        if (playerPool != null && player != null && pooledPlayers.Contains(player))
         {
-            playerPool.Return(player.gameObject);
-            UnsubscribeFromPlayerEvents(player);
+            try
+            {
+                playerPool.Return(player.gameObject);
+                UnsubscribeFromPlayerEvents(player);
+            }
+            catch (Exception ex)
+            {
+                LogWarning($"PlayerLauncher: Failed to return pooled player '{player.name}' on landing: {ex.Message}");
+            }
+
+            // if the current tracked player is the one we returned, clear references
+            pooledPlayers.Remove(player);
             player = null;
             playerInteractor = null;
-            // clear drag controller's interactor so it won't try to control a returned object
             if (dragController != null)
                 dragController.SetPlayerInteractor(null);
-            playerFromPool = false;
         }
 
         // Return to Idle state after landing
@@ -208,27 +244,9 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
                 camTransform.position = new Vector3(0f, 0f, camTransform.position.z);
             }
 
-            // If we already have a pooled player, return it first so we can get a fresh one
-            if (player != null && playerFromPool)
-            {
-                try
-                {
-                    UnsubscribeFromPlayerEvents(player);
-                    playerPool.Return(player.gameObject);
-                    Debug.Log($"[POOL] PlayerLauncher: returned previous pooled player '{player.name}' to pool");
-                    Log($"PlayerLauncher: returned previous pooled player '{player.name}' to pool");
-                }
-                catch (Exception ex)
-                {
-                    LogWarning($"PlayerLauncher: Failed to return previous pooled player: {ex.Message}");
-                }
-
-                player = null;
-                playerInteractor = null;
-                if (dragController != null)
-                    dragController.SetPlayerInteractor(null);
-                playerFromPool = false;
-            }
+            // Don't return previous pooled players here — we want to allow multiple
+            // pooled instances on screen simultaneously. The individual instance will
+            // be returned when it lands (per-player handlers below).
 
             // Place the newly spawned instance at the world position corresponding to the screen touch
             Vector3 spawnWorld = ScreenToWorld(screenPosition);
@@ -241,7 +259,11 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
                     player = pg;
                     Debug.Log($"[POOL] PlayerLauncher: obtained pooled player instance '{player.name}' from pool");
                     Log($"PlayerLauncher: obtained pooled player instance '{player.name}' from pool");
-                    playerFromPool = true;
+                    // Track that this instance came from the pool so it can be returned
+                    // when it lands. Also create a dedicated interactor and per-instance
+                    // event handlers so older players will remain and be cleaned up
+                    // independently of newer ones.
+                    pooledPlayers.Add(player);
                     playerInteractor = new PhysicsGamePlayerInteractor(player) as IPlayerInteractor;
                     SubscribeToPlayerEvents(player);
                     // Tell the drag controller about the newly created interactor so future drag commands act on it
@@ -249,7 +271,7 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
                     {
                         dragController.SetPlayerInteractor(playerInteractor);
                         // proactively start the drag on the player so it's ready to follow immediately
-                        try
+                            try
                         {
                             playerInteractor?.BeginDragAt(spawnWorld);
                             // Also start the DragController following right away so subsequent Move events
@@ -260,7 +282,7 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
                                 dragController.Begin(screenPosition, touchId);
                             }
                         }
-                        catch (Exception) { }
+                            catch (Exception) { }
                     }
                 }
                 else
@@ -317,15 +339,75 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
     private void SubscribeToPlayerEvents(PhysicsGamePlayer p)
     {
         if (p == null) return;
-        p.Landed += OnPlayerLanded;
-        p.Launched += OnPlayerLaunched;
+        // Create and store per-instance delegates so we can unsubscribe precisely
+        // for each player instance later. These will forward to per-player handlers
+        // which are aware of the source instance.
+        Action launchedHandler = () => OnPlayerLaunchedFor(p);
+        Action landedHandler = () => OnPlayerLandedFor(p);
+        p.Launched += launchedHandler;
+        p.Landed += landedHandler;
+        playerHandlers[p] = (launchedHandler, landedHandler);
     }
 
     private void UnsubscribeFromPlayerEvents(PhysicsGamePlayer p)
     {
         if (p == null) return;
-        p.Landed -= OnPlayerLanded;
-        p.Launched -= OnPlayerLaunched;
+        if (playerHandlers.TryGetValue(p, out var handlers))
+        {
+            p.Launched -= handlers.launched;
+            p.Landed -= handlers.landed;
+            playerHandlers.Remove(p);
+        }
+    }
+
+    // Per-player landing handler so we can correctly return the landed instance
+    // to the pool (if pooled) and only update the global player/interactor state
+    // if this instance is the currently tracked `player`.
+    private void OnPlayerLandedFor(PhysicsGamePlayer p)
+    {
+        // If it's pooled, return that particular instance.
+        if (p != null && playerPool != null && pooledPlayers.Contains(p))
+        {
+            try
+            {
+                UnsubscribeFromPlayerEvents(p);
+                playerPool.Return(p.gameObject);
+                Log($"PlayerLauncher: returned pooled player '{p.name}' to pool on landing");
+            }
+            catch (Exception ex)
+            {
+                LogWarning($"PlayerLauncher: Failed to return pooled player '{p?.name}' to pool: {ex.Message}");
+            }
+
+            pooledPlayers.Remove(p);
+        }
+
+        // If this landed instance was the currently-selected player, clear the
+        // PlayerLauncher references so another pull can be started.
+        if (player == p)
+        {
+            player = null;
+            playerInteractor = null;
+            if (dragController != null)
+                dragController.SetPlayerInteractor(null);
+
+            // Return to Idle state
+            if (idleState != null)
+                ChangeState(idleState);
+        }
+    }
+
+    // Per-player launched handler — only act if the launched player is the currently
+    // selected one. Other players launching should not change the launcher's state.
+    private void OnPlayerLaunchedFor(PhysicsGamePlayer p)
+    {
+        if (player != p) return;
+
+        playerInFlight = true;
+        if (dragController != null && dragController.IsFollowing)
+            dragController.End();
+
+        ChangeState(disabledState);
     }
 
     private void OnDrawGizmos()
