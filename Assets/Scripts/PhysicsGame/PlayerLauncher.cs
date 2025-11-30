@@ -77,7 +77,7 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
 
         // Resolve ground checker (PhysicsGroundChecker preferred, fallback to Simple)
         if (physicsGroundChecker != null)
-            groundChecker = physicsGroundChecker as IGroundChecker;
+            groundChecker = physicsGroundChecker;
         else
             groundChecker = new SimpleGroundChecker(groundLayerMask);
 
@@ -125,7 +125,7 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
                 var uip = GetComponent<UnityInputProvider>();
                 if (uip == null)
                     uip = gameObject.AddComponent<UnityInputProvider>();
-                inputProvider = uip as IInputProvider;
+                inputProvider = uip;
             }
         }
 
@@ -164,7 +164,10 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
                 {
                     playerPool.Return(p.gameObject);
                 }
-                catch (Exception) { }
+                catch (Exception)
+                {
+                    // ignored
+                }
             }
             pooledPlayers.Clear();
         }
@@ -182,7 +185,7 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
         // Wait a short time to allow scene to initialize
         yield return new WaitForSeconds(0.2f);
 
-        Vector2 center = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+        var center = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
         OnInputBegin(center, -1);
         yield return new WaitForSeconds(0.05f);
         OnInputMove(center + new Vector2(-100f, -80f), -1);
@@ -212,7 +215,7 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
             // be returned when it lands (per-player handlers below).
 
             // Place the newly spawned instance at the world position corresponding to the screen touch
-            Vector3 spawnWorld = ScreenToWorld(screenPosition);
+            var spawnWorld = ScreenToWorld(screenPosition);
             // Use the no-expand variant so we never create extra instances beyond
             // what the pool currently contains. If the pool is depleted this will
             // return null and we will not start a new pull/launch.
@@ -230,7 +233,7 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
                     // event handlers so older players will remain and be cleaned up
                     // independently of newer ones.
                     pooledPlayers.Add(player);
-                    playerInteractor = new PhysicsGamePlayerInteractor(player) as IPlayerInteractor;
+                    playerInteractor = new PhysicsGamePlayerInteractor(player);
                     SubscribeToPlayerEvents(player);
                     // Tell the drag controller about the newly created interactor so future drag commands act on it
                     if (dragController != null)
@@ -248,7 +251,10 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
                                 dragController.Begin(screenPosition, touchId);
                             }
                         }
-                            catch (Exception) { }
+                        catch (Exception)
+                        {
+                            // ignored
+                        }
                     }
                 }
                 else
@@ -298,7 +304,7 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
     public bool CanStartPull()
     {
         // Allow starting pull if there's an available player or the pool has available instances
-        bool havePlayerReady = (player != null && !player.IsAirborne) || (player == null && playerPool != null && playerPool.AvailableCount > 0);
+        var havePlayerReady = (player != null && !player.IsAirborne) || (player == null && playerPool != null && playerPool.AvailableCount > 0);
         return (havePlayerReady && !playerInFlight);
     }
 
@@ -342,7 +348,7 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
             }
             catch (Exception ex)
             {
-                LogWarning($"PlayerLauncher: Failed to return pooled player '{p?.name}' to pool: {ex.Message}");
+                LogWarning($"PlayerLauncher: Failed to return pooled player '{p.name}' to pool: {ex.Message}");
             }
 
             pooledPlayers.Remove(p);
@@ -425,7 +431,7 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
 
     private Vector3 ScreenToWorld(Vector2 screenPosition)
     {
-        Camera cam = worldCamera != null ? worldCamera : Camera.main;
+        var cam = worldCamera != null ? worldCamera : Camera.main;
         if (cam == null)
         {
             LogWarning("PlayerLauncher.ScreenToWorld: No camera found. Using default ScreenToWorldPoint with z=0.");
@@ -433,8 +439,8 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
         }
 
         // Calculate the z distance from camera to player to provide a proper depth for ScreenToWorldPoint
-        float z = Mathf.Abs(cam.transform.position.z - (player != null ? player.transform.position.z : 0f));
-        Vector3 sp = new Vector3(screenPosition.x, screenPosition.y, z);
+        var z = Mathf.Abs(cam.transform.position.z - (player != null ? player.transform.position.z : 0f));
+        var sp = new Vector3(screenPosition.x, screenPosition.y, z);
         return cam.ScreenToWorldPoint(sp);
     }
 
