@@ -190,46 +190,9 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
         OnInputEnd(center + new Vector2(-100f, -80f), -1);
     }
 
-    private void OnPlayerLaunched()
-    {
-        playerInFlight = true;
-        // When player launches, ensure we are not following any input
-        if (dragController != null && dragController.IsFollowing)
-            dragController.End();
-
-        ChangeState(disabledState);
-    }
-
-    private void OnPlayerLanded()
-    {
-        playerInFlight = false;
-        // If the player instance that landed was pooled, return it and clear any references
-        // that point to this player. Note: this is the handler for the *current* player
-        // reference; pooled players are tracked per-instance by the per-player handlers.
-        if (playerPool != null && player != null && pooledPlayers.Contains(player))
-        {
-            try
-            {
-                playerPool.Return(player.gameObject);
-                UnsubscribeFromPlayerEvents(player);
-            }
-            catch (Exception ex)
-            {
-                LogWarning($"PlayerLauncher: Failed to return pooled player '{player.name}' on landing: {ex.Message}");
-            }
-
-            // if the current tracked player is the one we returned, clear references
-            pooledPlayers.Remove(player);
-            player = null;
-            playerInteractor = null;
-            if (dragController != null)
-                dragController.SetPlayerInteractor(null);
-        }
-
-        // Return to Idle state after landing
-        if (idleState != null)
-            ChangeState(idleState);
-    }
+    // Note: Per-player events use OnPlayerLaunchedFor/OnPlayerLandedFor which are
+    // subscribed dynamically in SubscribeToPlayerEvents. These parameterless
+    // helpers were previously unused and have been removed.
 
     private void OnInputBegin(Vector2 screenPosition, int touchId)
     {
@@ -250,7 +213,10 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
 
             // Place the newly spawned instance at the world position corresponding to the screen touch
             Vector3 spawnWorld = ScreenToWorld(screenPosition);
-            var go = playerPool.Get(spawnWorld, Quaternion.identity);
+            // Use the no-expand variant so we never create extra instances beyond
+            // what the pool currently contains. If the pool is depleted this will
+            // return null and we will not start a new pull/launch.
+            var go = playerPool.GetNoExpand(spawnWorld, Quaternion.identity);
             if (go != null)
             {
                 var pg = go.GetComponent<PhysicsGamePlayer>();
@@ -331,8 +297,8 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
 
     public bool CanStartPull()
     {
-        // Allow starting pull if there's an available player or a pool configured
-        bool havePlayerReady = (player != null && !player.IsAirborne) || (player == null && playerPool != null);
+        // Allow starting pull if there's an available player or the pool has available instances
+        bool havePlayerReady = (player != null && !player.IsAirborne) || (player == null && playerPool != null && playerPool.AvailableCount > 0);
         return (havePlayerReady && !playerInFlight);
     }
 

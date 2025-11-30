@@ -31,6 +31,8 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
     private Rigidbody2D rb2D;
     private bool isDragging = false;
     private Vector3 dragTarget = Vector3.zero;
+    // World-space X coordinate where the drag started. Used to detect "pulled to the right" cases.
+    private float dragStartWorldX = 0f;
     private Vector3 lastDragPosition = Vector3.zero;
     private float lastDragTime = 0f;
     private bool previousSimulatedState = true;
@@ -201,6 +203,8 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
         isDragging = true;
         dragTarget = worldPosition;
         lastDragPosition = transform.position;
+        // remember where the drag started in world-space X so EndDragAt can detect a rightward pull
+        dragStartWorldX = transform.position.x;
         lastDragTime = Time.time;
 
         if (rb2D != null)
@@ -245,6 +249,16 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
         if (overrideVelocity.HasValue)
         {
             velocity = overrideVelocity.Value;
+        }
+
+        // If the player was dragged to the right of the original drag start point, we should
+        // not apply any launch force and instead let the player just drop straight down.
+        // Detect this by comparing final position against the saved drag start X.
+        // We zero the computed/override velocity so no horizontal or vertical impulse is applied.
+        if (currentPos.x > dragStartWorldX)
+        {
+            velocity.x = 0f;
+            velocity.y = 0f;
         }
 
         if (rb2D != null)
