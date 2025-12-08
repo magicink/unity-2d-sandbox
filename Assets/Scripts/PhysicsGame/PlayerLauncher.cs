@@ -37,6 +37,18 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
     [SerializeField] private float slingshotForceMultiplier = 10f;
     [SerializeField] private float minSlingshotDistance = 0.05f;
 
+    [Header("Ammo")]
+    [Tooltip("Maximum number of launches allowed (total ammo)")]
+    [SerializeField] private int maxAmmo = 3;
+
+    // Runtime ammo counter
+    private int remainingAmmo;
+
+    /// <summary>
+    /// Event invoked whenever the ammo count changes. Parameters: remaining, max
+    /// </summary>
+    public event Action<int, int> AmmoChanged;
+
     // Runtime objects
     private IInputProvider inputProvider;
     private IPlayerInteractor playerInteractor;
@@ -102,6 +114,10 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
         dragController.DragStartBlocked += (pos) => {
             Log($"Drag start blocked at {pos}");
         };
+
+        // initialize ammo count for runtime
+        remainingAmmo = Mathf.Max(0, maxAmmo);
+        AmmoChanged?.Invoke(remainingAmmo, maxAmmo);
     }
 
     private void OnEnable()
@@ -203,12 +219,20 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
         // This ensures a new instance is used per pull and avoids stale references.
         if (playerPool != null)
         {
+            // If out of ammo, do not spawn or start a pull on pooled players
+            if (remainingAmmo <= 0)
+            {
+                Log("PlayerLauncher: no ammo remaining — cannot pull (pooled)");
+            }
+            else
+            {
             // Reset the camera to (0,0) when dragging starts so the player is visible
             if (worldCamera != null)
             {
                 var camTransform = worldCamera.transform;
                 camTransform.position = new Vector3(0f, 0f, camTransform.position.z);
             }
+        }
 
             // Don't return previous pooled players here — we want to allow multiple
             // pooled instances on screen simultaneously. The individual instance will
@@ -305,7 +329,7 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
     {
         // Allow starting pull if there's an available player or the pool has available instances
         var havePlayerReady = (player != null && !player.IsAirborne) || (player == null && playerPool != null && playerPool.AvailableCount > 0);
-        return (havePlayerReady && !playerInFlight);
+        return (havePlayerReady && !playerInFlight && remainingAmmo > 0);
     }
 
     private void SubscribeToPlayerEvents(PhysicsGamePlayer p)
@@ -374,6 +398,9 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
     private void OnPlayerLaunchedFor(PhysicsGamePlayer p)
     {
         if (player != p) return;
+        // consume one ammo on launch
+        remainingAmmo = Mathf.Max(0, remainingAmmo - 1);
+        AmmoChanged?.Invoke(remainingAmmo, maxAmmo);
 
         playerInFlight = true;
         if (dragController != null && dragController.IsFollowing)
@@ -381,6 +408,19 @@ public class PlayerLauncher : AbstractStateMachine<LaunchState>
 
         ChangeState(disabledState);
     }
+
+    /// <summary>
+    /// Reload the launcher to full capacity (editor/runtime convenience).
+    /// </summary>
+    [ContextMenu("Reload Ammo")]
+    public void ReloadAmmo()
+    {
+        remainingAmmo = Mathf.Max(0, maxAmmo);
+        AmmoChanged?.Invoke(remainingAmmo, maxAmmo);
+    }
+
+    public int RemainingAmmo => remainingAmmo;
+    public int MaxAmmo => maxAmmo;
 
     private void OnDrawGizmos()
     {
