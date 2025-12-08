@@ -6,11 +6,27 @@ using UnityEngine.UI;
 /// keeps it sized with a pixel padding. Attach this component to the GameObject
 /// that has a UnityEngine.UI.Text component.
 /// </summary>
+[ExecuteAlways]
 [RequireComponent(typeof(Text))]
 public class TextBackground : MonoBehaviour
 {
     [Tooltip("Padding in pixels applied horizontally/vertically around the text.")]
-    public Vector2 padding = new Vector2(8, 6);
+    public Vector2 padding = new Vector2(32, 24);
+
+    [Tooltip("When enabled, padding scales proportionally with the Text font size using referenceFontSize as the baseline.")]
+    public bool scalePaddingWithFontSize = true;
+
+    [Tooltip("Font size used as the baseline when scaling padding with font size.")]
+    public float referenceFontSize = 36f;
+
+    [Tooltip("Extra multiplier applied after font-based scaling so padding can feel chunkier.")]
+    public float paddingScale = 1.2f;
+
+    [Tooltip("If true, the Text alignment will be forced to MiddleCenter so the text sits in the middle of the background.")]
+    public bool centerTextInBackground = true;
+
+    [Tooltip("If true, the Text RectTransform will be resized to its preferred width/height so centering is accurate.")]
+    public bool resizeTextToPreferred = true;
 
     [Tooltip("Background colour (alpha controls opacity)")]
     public Color backgroundColor = new Color(0f, 0f, 0f, 0.85f);
@@ -33,6 +49,13 @@ public class TextBackground : MonoBehaviour
     private Vector2 lastAnchorMin = Vector2.zero;
     private Vector2 lastAnchorMax = Vector2.zero;
     private Vector2 lastPivot = Vector2.zero;
+    private int lastFontSize = -1;
+    private bool lastScalePaddingWithFontSize = true;
+    private float lastReferenceFontSize = -1f;
+    private float lastPaddingScale = -1f;
+    private bool lastCenterTextInBackground = true;
+    private TextAnchor lastAlignment = TextAnchor.UpperLeft;
+    private bool lastResizeTextToPreferred = true;
 
     private const string backgroundName = "TextBackground_auto";
 
@@ -54,6 +77,8 @@ public class TextBackground : MonoBehaviour
         var anchorMin = textRect.anchorMin;
         var anchorMax = textRect.anchorMax;
         var pivot = textRect.pivot;
+        var fontSize = text != null ? text.fontSize : -1;
+        var alignment = text != null ? text.alignment : TextAnchor.UpperLeft;
 
         if (size != lastTextSize ||
             padding != lastPadding ||
@@ -61,10 +86,29 @@ public class TextBackground : MonoBehaviour
             anchoredPos != lastAnchoredPosition ||
             anchorMin != lastAnchorMin ||
             anchorMax != lastAnchorMax ||
-            pivot != lastPivot)
+            pivot != lastPivot ||
+            fontSize != lastFontSize ||
+            scalePaddingWithFontSize != lastScalePaddingWithFontSize ||
+            !Mathf.Approximately(referenceFontSize, lastReferenceFontSize) ||
+            !Mathf.Approximately(paddingScale, lastPaddingScale) ||
+            centerTextInBackground != lastCenterTextInBackground ||
+            (centerTextInBackground && alignment != TextAnchor.MiddleCenter) ||
+            resizeTextToPreferred != lastResizeTextToPreferred)
         {
             ApplyImmediate();
         }
+    }
+
+    private void OnValidate()
+    {
+        // Let designers tweak padding/color in the editor and see updates immediately
+        if (!isActiveAndEnabled) return;
+
+        if (text == null) text = GetComponent<Text>();
+        if (textRect == null) textRect = GetComponent<RectTransform>();
+
+        EnsureBackgroundExists();
+        ApplyImmediate();
     }
 
     private void EnsureBackgroundExists()
@@ -152,16 +196,52 @@ public class TextBackground : MonoBehaviour
         bgRect.anchoredPosition = textRect.anchoredPosition;
         bgRect.localScale = Vector3.one;
 
-        // Make size slightly larger using padding
+        // Prefer the text's measured size so the background wraps the visible glyphs
         var textSize = textRect.rect.size;
-        var desired = new Vector2(textSize.x + padding.x * 2f, textSize.y + padding.y * 2f);
+        if (text != null)
+        {
+            float preferredW = LayoutUtility.GetPreferredWidth(textRect);
+            float preferredH = LayoutUtility.GetPreferredHeight(textRect);
+            if (preferredW > 0f && preferredH > 0f)
+            {
+                textSize = new Vector2(Mathf.Max(textSize.x, preferredW), Mathf.Max(textSize.y, preferredH));
+            }
+        }
+
+        // Optionally resize the Text rect so centering and overflow behave predictably
+        if (resizeTextToPreferred && textRect != null)
+        {
+            textRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, textSize.x);
+            textRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, textSize.y);
+        }
+
+        // Optionally scale padding so the background grows with font size changes
+        var effectivePadding = padding;
+        if (scalePaddingWithFontSize && text != null)
+        {
+            float baseline = Mathf.Max(1f, referenceFontSize);
+            float scale = text.fontSize > 0 ? (float)text.fontSize / baseline : 1f;
+            effectivePadding *= scale * paddingScale;
+        }
+        else
+        {
+            effectivePadding *= paddingScale;
+        }
+
+        // Make size slightly larger using padding
+        var desired = new Vector2(textSize.x + effectivePadding.x * 2f, textSize.y + effectivePadding.y * 2f);
         bgRect.sizeDelta = desired;
 
         bgImage.color = backgroundColor;
 
         if (debug)
         {
-            Debug.Log($"[TextBackground] Updated background for '{name}': textSize={textSize} padding={padding} bgSize={desired}");
+            Debug.Log($"[TextBackground] Updated background for '{name}': textSize={textSize} padding={effectivePadding} bgSize={desired}");
+        }
+
+        if (centerTextInBackground && text != null && text.alignment != TextAnchor.MiddleCenter)
+        {
+            text.alignment = TextAnchor.MiddleCenter;
         }
 
         // Ensure the background GameObject is placed directly before the text in the
@@ -188,6 +268,13 @@ public class TextBackground : MonoBehaviour
         lastAnchorMin = textRect.anchorMin;
         lastAnchorMax = textRect.anchorMax;
         lastPivot = textRect.pivot;
+        lastFontSize = text != null ? text.fontSize : -1;
+        lastScalePaddingWithFontSize = scalePaddingWithFontSize;
+        lastReferenceFontSize = referenceFontSize;
+        lastPaddingScale = paddingScale;
+        lastCenterTextInBackground = centerTextInBackground;
+        lastAlignment = text != null ? text.alignment : TextAnchor.UpperLeft;
+        lastResizeTextToPreferred = resizeTextToPreferred;
     }
 
     // Expose a helper so other code can force a refresh when text content changes
