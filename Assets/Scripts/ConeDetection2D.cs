@@ -12,7 +12,7 @@ namespace Sandbox.Debugging
         [SerializeField] private LayerMask onlyWith = 0;
 
         [Tooltip("Optional tag check in addition to layer mask.")]
-        [SerializeField] private bool useTagCheck = false;
+        [SerializeField] private bool useTagCheck;
 
         [SerializeField] private string playerTag = "Player";
 

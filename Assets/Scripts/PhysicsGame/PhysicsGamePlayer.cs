@@ -1,8 +1,10 @@
 using System;
 using UnityEngine;
 using Sandbox.StateMachine;
+using Sandbox.Pooling;
 
 public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsState>
+    , InstancePool.IPooledInstance
 {
     private IdleState idleState;
     private DragState dragState;
@@ -27,8 +29,10 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
 
     // Drag state fields
     private Rigidbody2D rb2D;
-    private bool isDragging = false;
+    private bool isDragging;
     private Vector3 dragTarget = Vector3.zero;
+    // World-space X coordinate where the drag started. Used to detect "pulled to the right" cases.
+    private float dragStartWorldX = 0f;
     private Vector3 lastDragPosition = Vector3.zero;
     private float lastDragTime = 0f;
     private bool previousSimulatedState = true;
@@ -36,7 +40,7 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
     // Launch/airborne detection events
     public event Action Launched;
     public event Action Landed;
-    private bool isAirborne = false;
+    private bool isAirborne;
     private int groundContactCount = 0;
     public bool IsGrounded => groundContactCount > 0;
     public bool IsAirborne => isAirborne;
@@ -81,19 +85,10 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
     {
         base.Update();
 
-        // Check if the player is off-screen below the camera viewport and optionally respawn
-        if (respawnIfBelowViewport && !isDragging)
-        {
-            Camera cam = Camera.main;
-            if (cam != null)
-            {
-                Vector3 viewportPos = cam.WorldToViewportPoint(transform.position);
-                if (viewportPos.y < 0f + viewportBottomMargin)
-                {
-                    RespawnToWorldOrigin(cam, viewportPos.z);
-                }
-            }
-        }
+        // NOTE: automatic respawn when falling below the camera viewport was removed
+        // to avoid resetting the player's position to the world origin. Any manual
+        // respawn behavior should be explicitly invoked (e.g., via an interactor
+        // or external manager) instead of automatic on-update resets.
     }
 
     public void RespawnToWorldOrigin(Camera cam, float zDepth)
@@ -126,6 +121,53 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
         lastDragTime = Time.time;
         // clear any contact state because we're moving the player
         groundContactCount = 0;
+    }
+
+    // InstancePool.IPooledInstance - lifecycle hooks used when this player is pooled
+    public void OnCreatedForPool(InstancePool pool)
+    {
+        // nothing special to do on creation for now
+    }
+
+    public void OnTakenFromPool()
+    {
+        // Prepare the player for immediate use: stop physics and clear airborne/contact
+        isDragging = false;
+        isAirborne = false;
+        groundContactCount = 0;
+        followVelocity = Vector3.zero;
+        lastDragPosition = transform.position;
+        lastDragTime = Time.time;
+
+        if (rb2D != null)
+        {
+            rb2D.simulated = false;
+#if UNITY_2023_1_OR_NEWER
+            rb2D.linearVelocity = Vector2.zero;
+#else
+            rb2D.velocity = Vector2.zero;
+#endif
+            rb2D.angularVelocity = 0f;
+        }
+    }
+
+    public void OnReturnedToPool()
+    {
+        // When returned, ensure the player's simulation is disabled and velocities cleared
+        isDragging = false;
+        isAirborne = false;
+        groundContactCount = 0;
+
+        if (rb2D != null)
+        {
+#if UNITY_2023_1_OR_NEWER
+            rb2D.linearVelocity = Vector2.zero;
+#else
+            rb2D.velocity = Vector2.zero;
+#endif
+            rb2D.angularVelocity = 0f;
+            rb2D.simulated = false;
+        }
     }
 
     protected override PhysicsState GetInitialState()
@@ -161,6 +203,8 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
         isDragging = true;
         dragTarget = worldPosition;
         lastDragPosition = transform.position;
+        // remember where the drag started in world-space X so EndDragAt can detect a rightward pull
+        dragStartWorldX = transform.position.x;
         lastDragTime = Time.time;
 
         if (rb2D != null)
@@ -178,12 +222,15 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
         // During drag we are actively controlled and not considered airborne
         isAirborne = false;
 
+        Debug.Log($"PhysicsGamePlayer.BeginDragAt: player={name} startPos={transform.position} target={worldPosition}");
+
         BeginDrag();
     }
 
     public void UpdateDragTarget(Vector3 worldPosition)
     {
         if (!isDragging) return;
+        Debug.Log($"PhysicsGamePlayer.UpdateDragTarget: player={name} transform={transform.position} newTarget={worldPosition}");
         dragTarget = worldPosition;
     }
 
@@ -202,6 +249,16 @@ public class PhysicsGamePlayer : AbstractStateMachine<PhysicsGamePlayer.PhysicsS
         if (overrideVelocity.HasValue)
         {
             velocity = overrideVelocity.Value;
+        }
+
+        // If the player was dragged to the right of the original drag start point, we should
+        // not apply any launch force and instead let the player just drop straight down.
+        // Detect this by comparing final position against the saved drag start X.
+        // We zero the computed/override velocity so no horizontal or vertical impulse is applied.
+        if (currentPos.x > dragStartWorldX)
+        {
+            velocity.x = 0f;
+            velocity.y = 0f;
         }
 
         if (rb2D != null)

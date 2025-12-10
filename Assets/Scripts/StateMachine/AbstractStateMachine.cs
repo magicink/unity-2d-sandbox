@@ -29,6 +29,12 @@ namespace Sandbox.StateMachine
 
         protected virtual void Start()
         {
+            // If a state was already selected (e.g., pooled objects started a flow before Start), don't overwrite it.
+            if (CurrentState != null)
+            {
+                return;
+            }
+
             var initialState = GetInitialState();
             if (initialState != null)
             {

@@ -17,7 +17,7 @@ public class DragController
     public Vector3 LastFollowWorldPosition { get; private set; }
     public Vector3 RawFollowWorldPosition { get; private set; }
 
-    private readonly IPlayerInteractor playerInteractor;
+    private IPlayerInteractor playerInteractor;
     private readonly IGroundChecker groundChecker;
     private readonly Func<Vector2, Vector3> screenToWorld;
 
@@ -59,6 +59,15 @@ public class DragController
         IsFollowing = false;
         HasGizmoStart = false;
         HasGizmoEnd = false;
+    }
+
+    /// <summary>
+    /// Change the IPlayerInteractor used by this controller at runtime.
+    /// Useful when the PlayerLauncher obtains a player from a pool.
+    /// </summary>
+    public void SetPlayerInteractor(IPlayerInteractor interactor)
+    {
+        this.playerInteractor = interactor;
     }
 
     private Vector3 ApplyTension(Vector3 rawWorld)

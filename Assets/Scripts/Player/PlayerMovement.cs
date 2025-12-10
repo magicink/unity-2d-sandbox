@@ -12,7 +12,7 @@ namespace Player
 
         [Header("Movement")]
         [SerializeField] private float moveSpeed = 5f;
-        [SerializeField] private bool alignWithCameraForward = false;
+        [SerializeField] private bool alignWithCameraForward;
 
         private InputAction moveAction;
         private bool ownsAction;
@@ -126,7 +126,9 @@ namespace Player
                 forward.Normalize();
                 right.Normalize();
 
-                Vector2 aligned = (Vector2)(right * moveInput.x + forward * moveInput.y);
+                // right and forward are Vector3 with z cleared; assigning the result to
+                // a Vector2 performs the appropriate conversion so an explicit cast isn't needed.
+                Vector2 aligned = right * moveInput.x + forward * moveInput.y;
                 moveInput = Vector2.ClampMagnitude(aligned, 1f);
             }
 
@@ -145,7 +147,10 @@ namespace Player
                 return;
             }
 
-            Vector3 delta = new Vector3(moveInput.x, moveInput.y, 0f) * moveSpeed * deltaTime;
+            // Multiply the scalar values first to avoid two vector-scale temporaries
+            // (vector * float * float would create two intermediate Vector3 results).
+            float scale = moveSpeed * deltaTime;
+            Vector3 delta = new Vector3(moveInput.x * scale, moveInput.y * scale, 0f);
             transform.position += delta;
         }
 

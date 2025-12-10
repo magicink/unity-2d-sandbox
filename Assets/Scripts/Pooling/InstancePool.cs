@@ -213,6 +213,85 @@ namespace Sandbox.Pooling
             return instance != null && (inUse.Contains(instance) || available.Contains(instance));
         }
 
+        /// <summary>
+        /// Number of instances currently available to be taken from the pool (does not include in-use items).
+        /// </summary>
+        public int AvailableCount => available.Count;
+
+        /// <summary>
+        /// Number of instances currently in use by consumers.
+        /// </summary>
+        public int InUseCount => inUse.Count;
+
+        /// <summary>
+        /// Total instances the pool currently manages (available + in-use).
+        /// </summary>
+        public int TotalCount => available.Count + inUse.Count;
+
+        // New "no expand" getters: these attempt to return an instance from the pool
+        // but will NOT auto-create/expand the pool if none are available. This is
+        // useful for callers that want to respect a fixed pool size and avoid
+        // triggering expansion.
+        public GameObject GetNoExpand()
+        {
+            var instance = PrepareInstanceNoExpand(instancesParent, false);
+            if (instance == null)
+                return null;
+
+            instance.transform.localPosition = Vector3.zero;
+            instance.transform.localRotation = Quaternion.identity;
+
+            ActivateInstance(instance);
+            return instance;
+        }
+
+        public GameObject GetNoExpand(Vector3 position, Quaternion rotation)
+        {
+            var instance = PrepareInstanceNoExpand(instancesParent, true);
+            if (instance == null)
+                return null;
+
+            instance.transform.SetPositionAndRotation(position, rotation);
+            ActivateInstance(instance);
+            return instance;
+        }
+
+        public GameObject GetNoExpand(Transform parent, bool worldPositionStays = false)
+        {
+            var instance = PrepareInstanceNoExpand(parent, worldPositionStays);
+            if (instance == null)
+                return null;
+
+            if (!worldPositionStays)
+            {
+                var instanceTransform = instance.transform;
+                instanceTransform.localPosition = Vector3.zero;
+                instanceTransform.localRotation = Quaternion.identity;
+            }
+
+            ActivateInstance(instance);
+            return instance;
+        }
+
+        public GameObject GetNoExpand(Vector3 position, Quaternion rotation, Transform parent, bool worldPositionStays = true)
+        {
+            var instance = PrepareInstanceNoExpand(parent, worldPositionStays);
+            if (instance == null)
+                return null;
+
+            var instanceTransform = instance.transform;
+            if (worldPositionStays)
+                instanceTransform.SetPositionAndRotation(position, rotation);
+            else
+            {
+                instanceTransform.localPosition = position;
+                instanceTransform.localRotation = rotation;
+            }
+
+            ActivateInstance(instance);
+            return instance;
+        }
+
         private GameObject TakeInstance()
         {
             EnsureInitialized();
@@ -244,6 +323,32 @@ namespace Sandbox.Pooling
             return instance;
         }
 
+        // Like TakeInstance but DO NOT auto expand the pool. If there are no available
+        // instances then this returns null instead of creating a new one.
+        private GameObject TakeInstanceNoExpand()
+        {
+            EnsureInitialized();
+
+            if (prefab == null)
+            {
+                return null;
+            }
+
+            if (available.Count == 0)
+            {
+                if (verboseWarnings)
+                {
+                    Debug.LogWarning($"InstancePool on {name} is empty and expansion is disabled for this call.", this);
+                }
+
+                return null;
+            }
+
+            var instance = available.Dequeue();
+            inUse.Add(instance);
+            return instance;
+        }
+
         private void ActivateInstance(GameObject instance)
         {
             instance.SetActive(true);
@@ -261,6 +366,17 @@ namespace Sandbox.Pooling
             {
                 return null;
             }
+
+            var targetParent = parent != null ? parent : instancesParent;
+            instance.transform.SetParent(targetParent, worldPositionStays);
+            return instance;
+        }
+
+        private GameObject PrepareInstanceNoExpand(Transform parent, bool worldPositionStays)
+        {
+            var instance = TakeInstanceNoExpand();
+            if (instance == null)
+                return null;
 
             var targetParent = parent != null ? parent : instancesParent;
             instance.transform.SetParent(targetParent, worldPositionStays);
